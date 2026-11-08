@@ -5,7 +5,7 @@ struct RootView: View {
     @Environment(PermissionCenter.self) private var permissions
     @Environment(UpdateCenter.self) private var updates
     @Environment(ExclusionStore.self) private var exclusions
-    @State private var selection: SidebarItem = .overview
+    @Environment(Navigator.self) private var navigator
     @State private var systemJunk = JunkCleanerModel(group: .system)
     @State private var developerJunk = JunkCleanerModel(group: .developer)
     @State private var uninstaller = UninstallerModel()
@@ -29,6 +29,9 @@ struct RootView: View {
                 }
             }
             .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 300)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                AboutSidebarFooter(isSelected: selection == .about) { selection = .about }
+            }
         } detail: {
             // The page's name and what it's for sit in the toolbar, like in Finder and System Settings, so the page
             // itself starts with its content.
@@ -52,6 +55,12 @@ struct RootView: View {
             permissions.refresh()
             updates.checkIfDue()
         }
+    }
+
+    /// The page on screen. The menu bar can change it too, so it lives in the shared `Navigator`.
+    private var selection: SidebarItem {
+        get { navigator.selection }
+        nonmutating set { navigator.selection = newValue }
     }
 
     /// The sidebar never ends up with nothing selected.
@@ -89,6 +98,8 @@ struct RootView: View {
                 uninstaller.show(app)
                 selection = .uninstaller
             }
+        case .about:
+            AboutView()
         }
     }
 }

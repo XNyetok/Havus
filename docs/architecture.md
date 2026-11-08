@@ -11,7 +11,8 @@
 │   ├─ Hapus Aplikasi     UninstallerModel                      │
 │   ├─ File Gede & Lama   LargeFilesModel                       │
 │   ├─ Peta Disk          DiskUsageModel (read-only)            │
-│   └─ Jalan Otomatis     StartupItemsModel                     │
+│   ├─ Jalan Otomatis     StartupItemsModel                     │
+│   └─ Tentang Havus      UpdateCenter, links to the website    │
 │  Pengaturan             ExclusionStore ──► every page model   │
 └───────────────┬───────────────────────────────────────────────┘
                 │ runs in the background (TaskGroup / Task.detached)

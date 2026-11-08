@@ -48,6 +48,9 @@ final class UpdateCenter {
         lastCheck = defaults.object(forKey: Key.lastCheck) as? Date
     }
 
+    /// Whether the last check found no newer version. `false` before any check, since Havus doesn't know yet.
+    var isUpToDate: Bool { latestVersion != nil && availableUpdate == nil }
+
     /// A version newer than the running one, if the last check found it.
     var availableUpdate: Update? {
         guard let latestVersion, let currentVersion, latestVersion > currentVersion else { return nil }
