@@ -4,6 +4,7 @@ import SwiftUI
 
 struct LargeFilesView: View {
     @Bindable var model: LargeFilesModel
+    @Environment(PermissionCenter.self) private var permissions
     @State private var isConfirming = false
 
     var body: some View {
@@ -63,11 +64,19 @@ struct LargeFilesView: View {
                 title: Text("Cari file yang makan tempat"),
                 message: Text(
                     "Havus pakai index Spotlight buat nyari file gede di folder kamu (di luar Library). Nggak ada yang dihapus tanpa persetujuan kamu."
-                )
+                ),
+                note: permissions.hasFullDiskAccess ? nil : FullDiskAccessNote.text
             ) {
-                Button("Cari Sekarang") { model.search() }
-                    .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.defaultAction)
+                if permissions.hasFullDiskAccess {
+                    Button("Cari Sekarang") { model.search() }
+                        .buttonStyle(.borderedProminent)
+                        .keyboardShortcut(.defaultAction)
+                } else {
+                    Button("Cari Aja") { model.search() }
+                    Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
+                        .buttonStyle(.borderedProminent)
+                        .keyboardShortcut(.defaultAction)
+                }
             }
 
         case .searching:
@@ -112,6 +121,7 @@ struct LargeFilesView: View {
 private struct LargeFileList: View {
     let model: LargeFilesModel
     @Environment(ExclusionStore.self) private var exclusions
+    @Environment(PermissionCenter.self) private var permissions
     /// The row a click or the arrow keys picked, which Space shows.
     @State private var highlighted: LargeFile.ID?
     /// The file Quick Look shows, if it's open.
@@ -128,6 +138,15 @@ private struct LargeFileList: View {
                 } notes: {
                     if let removal = model.lastRemoval {
                         RemovalNotice(removal: removal)
+                    }
+                    if model.skippedMediaLibraries, !permissions.hasFullDiskAccess {
+                        NoticeBanner(
+                            tone: .warning, symbol: "lock.fill",
+                            message: Text(
+                                "Pustaka Foto dan Musik nggak ikut dicari, karena Akses Disk Penuh belum nyala.")
+                        ) {
+                            Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
+                        }
                     }
                     Label("Klik sebuah file, lalu tekan Spasi buat lihat isinya.", systemImage: "eye")
                         .font(.callout)

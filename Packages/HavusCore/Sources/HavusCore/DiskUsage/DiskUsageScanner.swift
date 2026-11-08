@@ -49,6 +49,8 @@ public struct DiskUsageScanner: Sendable {
 
     public let detailThreshold: Int64
     public let maximumListed: Int
+    /// Libraries left unopened and counted as unreadable, so macOS doesn't ask for permission. `nil` opens everything.
+    public let skipped: MediaLibraries?
 
     /// Folders deeper than this are measured as a whole, like small ones, so no tree can be too deep for the stack.
     static let maximumDepth = 64
@@ -58,9 +60,10 @@ public struct DiskUsageScanner: Sendable {
     ]
     private static let keySet = Set(keys)
 
-    public init(detailThreshold: Int64 = 10_000_000, maximumListed: Int = 50) {
+    public init(detailThreshold: Int64 = 10_000_000, maximumListed: Int = 50, skipping skipped: MediaLibraries? = nil) {
         self.detailThreshold = detailThreshold
         self.maximumListed = maximumListed
+        self.skipped = skipped
     }
 
     /// Measures `url` and everything inside it. `progress` is called now and then, on the calling thread.
@@ -69,7 +72,8 @@ public struct DiskUsageScanner: Sendable {
     /// other File Provider apps) count as the space they take on this Mac and are never downloaded. Blocking; when
     /// cancelled, it stops early and returns what it counted so far.
     public func scan(_ url: URL, progress: (@Sendable (Progress) -> Void)? = nil) -> DiskUsageItem {
-        Self.withoutDownloading {
+        if let skipped, skipped.contain(url) { return Self.unreadable(url, nil) }
+        return Self.withoutDownloading {
             var tally = Tally(report: progress)
             do {
                 let values = try url.resourceValues(forKeys: Self.keySet)
@@ -88,6 +92,13 @@ public struct DiskUsageScanner: Sendable {
                 url: url, kind: .file, bytes: bytes, isComplete: true, children: nil, otherItems: .none)
         }
         let isPackage = values.isPackage == true
+        if let skipped, skipped.contain(url) {
+            // Unreadable, like a folder macOS keeps closed: opening it is what would make macOS ask.
+            tally.add(0)
+            return DiskUsageItem(
+                url: url, kind: isPackage ? .package : .folder, bytes: 0, isComplete: false,
+                children: isPackage ? nil : [], otherItems: .none)
+        }
         guard isPackage || depth >= Self.maximumDepth else { return folder(url, depth: depth, &tally) }
 
         let measurement = DirectorySize.measure(url)

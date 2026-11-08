@@ -5,6 +5,7 @@ import SwiftUI
 /// folder on screen. Click a folder to see inside it. Read-only.
 struct DiskUsageView: View {
     let model: DiskUsageModel
+    @Environment(PermissionCenter.self) private var permissions
 
     var body: some View {
         PhaseContent(key: stateKey) {
@@ -49,11 +50,19 @@ struct DiskUsageView: View {
                 title: Text("Lihat ke mana ruang disk kamu"),
                 message: Text(
                     "Havus ngitung ukuran tiap folder di folder home kamu, termasuk yang tersembunyi. Cuma dilihat, nggak ada yang dihapus."
-                )
+                ),
+                note: permissions.hasFullDiskAccess ? nil : FullDiskAccessNote.text
             ) {
-                Button("Pindai Sekarang") { model.scan() }
-                    .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.defaultAction)
+                if permissions.hasFullDiskAccess {
+                    Button("Pindai Sekarang") { model.scan() }
+                        .buttonStyle(.borderedProminent)
+                        .keyboardShortcut(.defaultAction)
+                } else {
+                    Button("Pindai Aja") { model.scan() }
+                    Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
+                        .buttonStyle(.borderedProminent)
+                        .keyboardShortcut(.defaultAction)
+                }
             }
 
         case .scanning:

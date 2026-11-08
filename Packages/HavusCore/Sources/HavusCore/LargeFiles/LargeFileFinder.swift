@@ -33,11 +33,14 @@ public struct LargeFileFinder: Sendable {
     static let fallbackFolders = ["Desktop", "Documents", "Downloads", "Movies", "Music", "Pictures"]
 
     public let home: URL
+    /// Libraries left out without being looked at, so macOS doesn't ask for permission. `nil` searches everything.
+    public let skipped: MediaLibraries?
     private let usesSpotlight: Bool
 
-    public init(home: URL = .homeDirectory, usesSpotlight: Bool = true) {
+    public init(home: URL = .homeDirectory, usesSpotlight: Bool = true, skipping skipped: MediaLibraries? = nil) {
         self.home = home
         self.usesSpotlight = usesSpotlight
+        self.skipped = skipped
     }
 
     /// Blocking. Sorted from largest to smallest. Files that `exclusions` blocks are left out.
@@ -52,6 +55,8 @@ public struct LargeFileFinder: Sendable {
         var files: [LargeFile] = []
         for candidate in candidates {
             if Task.isCancelled { break }
+            // Before anything looks at the file: even reading its size would make macOS ask.
+            if let skipped, skipped.contain(candidate.url) { continue }
             if let file = refine(candidate, criteria, homeComponents: homeComponents, packageCache: &packageCache),
                 !exclusions.blocks(file.url)
             {
@@ -143,6 +148,10 @@ public struct LargeFileFinder: Sendable {
 
             for case let url as URL in enumerator {
                 if Task.isCancelled { return candidates }
+                if let skipped, skipped.contain(url) {
+                    enumerator.skipDescendants()
+                    continue
+                }
                 guard let values = try? url.resourceValues(forKeys: keys), values.isRegularFile == true,
                     Int64(values.totalFileAllocatedSize ?? values.fileAllocatedSize ?? 0) >= minimumSize
                 else { continue }
