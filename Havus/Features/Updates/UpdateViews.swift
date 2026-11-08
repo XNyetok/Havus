@@ -20,27 +20,6 @@ struct UpdateBanner: View {
     }
 }
 
-/// On Ringkasan until the user decides whether Havus may check for new versions by itself.
-struct AutomaticCheckPrompt: View {
-    @Environment(UpdateCenter.self) private var updates
-
-    var body: some View {
-        if !updates.hasChosenAutomaticChecks {
-            NoticeBanner(
-                tone: .neutral,
-                symbol: "bell.badge",
-                title: Text("Mau dikabarin kalau ada versi baru?"),
-                message: Text(
-                    "Sehari sekali, Havus bisa ngecek lewat internet apakah ada versi baru. Nggak ada data apa pun soal kamu atau Mac kamu yang dikirim. Bisa kamu ubah kapan aja di menu **Havus → Cek Versi Baru Otomatis**."
-                )
-            ) {
-                Button("Nyalain") { updates.setChecksAutomatically(true) }
-                Button("Nggak Usah") { updates.setChecksAutomatically(false) }
-            }
-        }
-    }
-}
-
 /// "Cek Versi Baru" and its toggle, in the app menu right below "About Havus", where Mac apps keep them.
 struct UpdateCommands: Commands {
     let updates: UpdateCenter

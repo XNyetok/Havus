@@ -39,7 +39,6 @@ struct OverviewView: View {
                         tile(.startupItems)
                     }
                 }
-                AutomaticCheckPrompt()
                 Label("Semua proses jalan di Mac kamu. Havus nggak ngirim data kamu ke internet.", systemImage: "lock")
                     .font(.footnote)
                     .foregroundStyle(.secondary)

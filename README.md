@@ -57,7 +57,7 @@ Every release since 0.3.0 is signed with the same Havus certificate. To check a 
 
 ### Updating
 
-Havus can't install updates by itself yet, but it can tell you when there's a new version. Choose **Turn On** when *Overview* asks, or turn on **Havus → Check for Updates Automatically** in the menu bar. **Havus → Check for Updates…** checks right away. When a new version is out, Havus links to [what's new](https://havus.web.id/en/changelog/), and [havus.web.id/en/update](https://havus.web.id/en/update/) has the steps to install it. Since 0.3.0, Full Disk Access stays on when you update.
+Havus can't install updates by itself yet, but it can tell you when there's a new version. Choose **Turn On** when Havus asks on its first launch, or turn on **Havus → Check for Updates Automatically** in the menu bar. **Havus → Check for Updates…** checks right away. When a new version is out, Havus links to [what's new](https://havus.web.id/en/changelog/), and [havus.web.id/en/update](https://havus.web.id/en/update/) has the steps to install it. Since 0.3.0, Full Disk Access stays on when you update.
 
 ### Build from source
 
