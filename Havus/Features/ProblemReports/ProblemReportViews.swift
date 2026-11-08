@@ -50,14 +50,16 @@ private struct ProblemReportAlert: ViewModifier {
         switch prompt {
         case .crash:
             Text(
-                "macOS nyimpen laporan crash-nya di Mac kamu. Isinya info teknis soal Havus dan macOS, bukan isi file kamu. Kalau kamu kirim, bug-nya bisa lebih cepat dibenerin. Havus nunjukin filenya di Finder, kamu tinggal lampirin."
+                "macOS nyimpen laporan crash-nya di Mac kamu. Isinya info teknis soal Havus dan macOS, bukan isi file kamu. Kalau kamu kirim, bug-nya bisa lebih cepat dibenerin. Havus nunjukin laporan itu dan catatan aktivitasnya di Finder, kamu tinggal lampirin."
             )
         case .problem(recentCrash: .some):
             Text(
-                "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub. Havus juga nunjukin laporan crash terakhirnya di Finder, biar bisa kamu lampirin."
+                "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub. Havus juga nunjukin laporan crash terakhir dan catatan aktivitasnya di Finder, biar bisa kamu lampirin."
             )
         case .problem(recentCrash: nil):
-            Text("Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub.")
+            Text(
+                "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub. Havus juga nunjukin catatan aktivitasnya di Finder, biar bisa kamu lampirin."
+            )
         }
     }
 }

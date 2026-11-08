@@ -124,13 +124,15 @@ Havus writes to the unified log under the subsystem `id.nyetok.havus` (`Log` in 
   /usr/bin/log show --last 1h --info --predicate 'subsystem == "id.nyetok.havus"'
   ```
 
+- **In a problem report.** `LogExport` reads Havus's lines back with `OSLogStore` and writes them to a file the user can attach (see [Crash reports](#crash-reports)). Lines from an earlier session, such as the one that crashed, need the store's system scope, which macOS opens only for admin accounts outside the sandbox. For other accounts, the file holds only the running session's lines.
+
 ## Crash reports
 
 Apple passes crash reports on only to developers of App Store apps, so Havus helps the user send one. It never sends anything itself, and goes online for nothing new.
 
 - **Where macOS keeps them.** When Havus crashes, macOS writes a report to `~/Library/Logs/DiagnosticReports`, named after the process (`Havus-2026-11-08-201402.ips`), and moves it into `Retired` there a few hours later. `CrashReport` reads both folders, which needs no permission. A file counts only when its first line, a JSON header, says it's a crash (`bug_type` 309) of the running app's bundle identifier, so a Debug build sees only its own reports.
 - **Offered once, at launch.** `ProblemReportCenter` offers the newest report since the last one it offered, in an alert, unless the welcome sheet is up. The first launch only notes the time, so reports from versions without [debug symbols](maintainer.md#reading-a-crash-report) aren't offered. The check runs at launch also because **Sampah Sistem** offers `~/Library/Logs`, crash reports included, for cleanup.
-- **The user sends it.** **Lapor lewat GitHub** opens the bug report form with the Havus and macOS versions filled in, and **Kirim lewat Email** opens an email with the same details. Either way, Havus writes a copy of the report to its temporary folder as `.ips.txt`, since GitHub doesn't take `.ips` files, with the home folder written as `~`, and shows it in Finder to look at and attach. **Laporkan Masalah…** in the Help menu offers the same two ways at any time, with the newest crash report of the past week, if there is one.
+- **The user sends it.** **Lapor lewat GitHub** opens the bug report form with the Havus and macOS versions filled in, and **Kirim lewat Email** opens an email with the same details. Either way, Havus then writes two files to its temporary folder and shows them in Finder to look at and attach: a copy of the report as `.ips.txt`, since GitHub doesn't take `.ips` files, with the home folder written as `~`, and its [log](#logging) lines from the three hours before the crash as `Havus-log-<date>.txt`. **Laporkan Masalah…** in the Help menu offers the same two ways at any time, with the log lines of the past day and the newest crash report of the past week, if there is one.
 
 ## Languages
 
