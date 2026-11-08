@@ -7,9 +7,10 @@ These are enabled on [XNyetok/Havus](https://github.com/XNyetok/Havus). Keep the
 - **Secret scanning** with **push protection**
 - **Private vulnerability reporting** (used by [SECURITY.md](../SECURITY.md))
 - **Dependabot alerts** and **Dependabot security updates**
+- **Squash merging** only (merge commits and rebase merging are off), with **auto-merge** allowed
 - **Automatically delete head branches** after a merge
 - **Ruleset "Protect main"** on the default branch:
-  - pull request required, with 0 approvals so the maintainer can merge their own PRs
+  - pull request required, with 0 approvals so the maintainer can merge their own PRs, and squash as the only merge method
   - required status checks `Scan secret` and `Build & test`, accepted only from GitHub Actions
   - no force pushes, no branch deletion, no bypass
 
@@ -22,27 +23,40 @@ git config user.name   # Debi Kurnia
 git config user.email  # debi@elysiumx.org
 ```
 
-On a new machine, set both before the first commit, then run `make setup` and `git config fetch.prune true`. To show commits as **Verified** on GitHub, sign them with an SSH or GPG key registered on your account (`git config commit.gpgsign true`).
+On a new machine, set both before the first commit, run `make setup` and `git config fetch.prune true`, and add the `git sync` alias that the workflow below uses:
+
+```sh
+git config alias.sync '!git switch main && git pull --ff-only --prune && git branch --format="%(refname:short) %(upstream:track)" | sed -n "s/ \[gone\]$//p" | xargs -r git branch -D'
+```
+
+GitHub signs the squash commits on `main`, so they show as **Verified**. To sign the commits on your branches too, use an SSH or GPG key registered on your account (`git config commit.gpgsign true`).
 
 ## Day-to-day workflow
 
-`main` only changes through pull requests:
+`main` only changes through pull requests, and every pull request is squash-merged. Keep yours to one commit: its message becomes the commit on `main`, so you write it once. See [Commit messages](../CONTRIBUTING.md#commit-messages).
 
 ```sh
-git switch main && git pull
-git switch -c feat/short-description
-# ...work, commit in English (Conventional Commits)...
-git push -u origin feat/short-description
+git sync
+git switch -c fix/short-description
+# ...work, then one commit...
+make lint test build
+git push -u origin HEAD
 gh pr create --fill
+gh pr merge --auto --squash --author-email debi@elysiumx.org
 ```
 
-Once CI is green, squash-merge. The `--author-email` flag keeps the squash commit on the project identity:
+- `git sync` switches to an up-to-date `main` and deletes the local branches of merged pull requests.
+- `gh pr create --fill` takes the title and description from the commit.
+- `gh pr merge --auto` lets GitHub merge once `Scan secret` and `Build & test` pass, then delete the branch, so there's no need to wait. The `--author-email` flag keeps the squash commit on the project identity.
+
+If a check fails, the pull request stays open. Fix the commit and push it again:
 
 ```sh
-gh pr merge --squash --author-email debi@elysiumx.org --delete-branch
+git commit --amend
+git push --force-with-lease
 ```
 
-GitHub deletes the remote branch automatically, and with `fetch.prune` enabled, the next `git pull` removes it locally too.
+Force-push only to a pull request branch; the ruleset blocks it on `main`. When a pull request has more than one commit, such as a contributor's, write the squash commit yourself with `--subject "... (#N)"` and `--body`.
 
 ## Releases (signed, not notarized yet)
 

@@ -128,10 +128,24 @@ Not fluent in Indonesian? Put the English text in your PR description and a main
 
 ## Commits and pull requests
 
-- One focused change per PR.
-- Commit messages in English, using [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, ...).
-- `main` is protected: changes land through pull requests, CI (`Scan secret` and `Build & test`) must pass, and PRs are squash-merged.
-- Fill in the PR template, including the safety checklist.
+- One focused change per PR. PRs are squash-merged.
+- `main` is protected: changes land through pull requests, and CI (`Scan secret` and `Build & test`) must pass.
+- Fill in the PR template, and delete the checklist items that don't apply.
+
+### Commit messages
+
+Commit messages are in English and use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, ...).
+
+- The subject says what changes, in the imperative, in 60 characters or fewer. The reason goes in the body.
+- Small changes need no body. Otherwise, write a few lines of prose about why the change is needed and anything the diff doesn't show, wrapped at 72 characters. Leave out the list of changed files: the diff already has it.
+
+```text
+fix: add the signing keychain to the search list
+
+The v0.3.0 release run stopped at "no identity found". On the macOS 26
+runner, codesign only finds an identity in a keychain on the search
+list, even with --keychain.
+```
 
 ## Never commit sensitive data
 
