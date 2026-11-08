@@ -111,6 +111,14 @@ The only network access in Havus. It tells the user about a new version; it neve
 - **Only the tag is read.** The tag must look like `vX.Y.Z`; the release notes and assets are ignored. The answer can't change anything in the app except the version number shown, and the link always goes to the release on the changelog at havus.web.id, in the language Havus runs in: `https://havus.web.id/en/changelog/#vX.Y.Z` in English, `https://havus.web.id/changelog/#vX.Y.Z` otherwise. The website builds that page from the same GitHub releases.
 - **Failures stay quiet.** When an automatic check fails, Havus tries again the next day. A check started from the menu shows an alert that it couldn't connect.
 
+## Crash reports
+
+Apple passes crash reports on only to developers of App Store apps, so Havus helps the user send one. It never sends anything itself, and goes online for nothing new.
+
+- **Where macOS keeps them.** When Havus crashes, macOS writes a report to `~/Library/Logs/DiagnosticReports`, named after the process (`Havus-2026-11-08-201402.ips`), and moves it into `Retired` there a few hours later. `CrashReport` reads both folders, which needs no permission. A file counts only when its first line, a JSON header, says it's a crash (`bug_type` 309) of the running app's bundle identifier, so a Debug build sees only its own reports.
+- **Offered once, at launch.** `ProblemReportCenter` offers the newest report since the last one it offered, in an alert, unless the welcome sheet is up. The first launch only notes the time, so reports from versions without [debug symbols](maintainer.md#reading-a-crash-report) aren't offered. The check runs at launch also because **Sampah Sistem** offers `~/Library/Logs`, crash reports included, for cleanup.
+- **The user sends it.** **Lapor lewat GitHub** opens the bug report form with the Havus and macOS versions filled in, and **Kirim lewat Email** opens an email with the same details. Either way, Havus writes a copy of the report to its temporary folder as `.ips.txt`, since GitHub doesn't take `.ips` files, with the home folder written as `~`, and shows it in Finder to look at and attach. **Laporkan Masalah…** in the Help menu offers the same two ways at any time, with the newest crash report of the past week, if there is one.
+
 ## Languages
 
 The UI is in Indonesian and English.

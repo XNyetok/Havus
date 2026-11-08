@@ -6,6 +6,7 @@ struct RootView: View {
     @Environment(UpdateCenter.self) private var updates
     @Environment(ExclusionStore.self) private var exclusions
     @Environment(Navigator.self) private var navigator
+    @Environment(ProblemReportCenter.self) private var problemReports
     @State private var systemJunk = JunkCleanerModel(group: .system)
     @State private var developerJunk = JunkCleanerModel(group: .developer)
     @State private var uninstaller = UninstallerModel()
@@ -44,10 +45,15 @@ struct RootView: View {
                 .navigationSubtitle(Text(selection.subtitle))
         }
         .updateCheckAlert(updates)
+        .problemReportAlert(problemReports)
         // Once, on the first launch. Someone who already answered the update question before the sheet existed has
-        // been using Havus, so they skip it.
+        // been using Havus, so they skip it. A new crash report isn't offered on top of the sheet: it waits for the
+        // next launch.
         .onAppear {
             isShowingOnboarding = !hasOnboarded && !updates.hasChosenAutomaticChecks
+            if !isShowingOnboarding {
+                problemReports.offerNewCrashReport()
+            }
         }
         .sheet(isPresented: $isShowingOnboarding) {
             OnboardingView {

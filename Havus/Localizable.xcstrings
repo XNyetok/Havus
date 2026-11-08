@@ -547,6 +547,16 @@
         }
       }
     },
+    "(Lampirin laporan crash yang Havus tunjukin di Finder.)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Attach the crash report that Havus showed in Finder.)"
+          }
+        }
+      }
+    },
     "Ada file sisa yang nggak bisa dibaca Havus, jadi ukurannya belum lengkap. Nyalain Akses Disk Penuh biar kebaca semua." : {
       "localizations" : {
         "en" : {
@@ -587,6 +597,26 @@
         }
       }
     },
+    "Akses Disk Penuh mati" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full Disk Access off"
+          }
+        }
+      }
+    },
+    "Akses Disk Penuh nyala" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full Disk Access on"
+          }
+        }
+      }
+    },
     "Akses Disk Penuh udah aktif" : {
       "localizations" : {
         "en" : {
@@ -613,6 +643,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Safe"
+          }
+        }
+      }
+    },
+    "Apa yang terjadi?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What happened?"
           }
         }
       }
@@ -1259,6 +1299,26 @@
         }
       }
     },
+    "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describe what happened on GitHub, or by email if you don't have a GitHub account."
+          }
+        }
+      }
+    },
+    "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub. Havus juga nunjukin laporan crash terakhirnya di Finder, biar bisa kamu lampirin." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describe what happened on GitHub, or by email if you don't have a GitHub account. Havus also shows its latest crash report in Finder, so you can attach it."
+          }
+        }
+      }
+    },
     "Coba turunin ukuran minimal, atau cari juga file yang masih sering dibuka." : {
       "localizations" : {
         "en" : {
@@ -1786,6 +1846,26 @@
         }
       }
     },
+    "Havus berhenti mendadak" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Havus quit unexpectedly"
+          }
+        }
+      }
+    },
+    "Havus berhenti mendadak. Ini laporan crash-nya:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Havus quit unexpectedly. Here's the crash report:"
+          }
+        }
+      }
+    },
     "Havus cuma nunjukin yang bisa dibersihin. Nggak ada yang dihapus tanpa persetujuan kamu." : {
       "localizations" : {
         "en" : {
@@ -1872,6 +1952,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Havus uses the Spotlight index to find large files in your folders (outside Library). Nothing is removed without your OK."
+          }
+        }
+      }
+    },
+    "Havus sempat berhenti mendadak" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Havus quit unexpectedly"
           }
         }
       }
@@ -2042,6 +2132,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Manage"
+          }
+        }
+      }
+    },
+    "Kirim lewat Email" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send by Email"
           }
         }
       }
@@ -2272,6 +2372,36 @@
         }
       }
     },
+    "Lapor lewat GitHub" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report on GitHub"
+          }
+        }
+      }
+    },
+    "Laporkan Masalah…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report a Problem…"
+          }
+        }
+      }
+    },
+    "Laporkan masalah" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report a problem"
+          }
+        }
+      }
+    },
     "Launch agent" : {
       "localizations" : {
         "en" : {
@@ -2374,6 +2504,16 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Lokasi %1$lld dari %2$lld"
+          }
+        }
+      }
+    },
+    "Masalah di Havus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A problem with Havus"
           }
         }
       }
@@ -3684,6 +3824,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "macOS wouldn't move %@. Try turning on Havus in **Privacy & Security → App Management**, or remove it yourself in Finder."
+          }
+        }
+      }
+    },
+    "macOS nyimpen laporan crash-nya di Mac kamu. Isinya info teknis soal Havus dan macOS, bukan isi file kamu. Kalau kamu kirim, bug-nya bisa lebih cepat dibenerin. Havus nunjukin filenya di Finder, kamu tinggal lampirin." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS saved a crash report on your Mac. It has technical details about Havus and macOS, not what's in your files. Sending it helps get the bug fixed sooner. Havus shows the file in Finder, so you can attach it."
           }
         }
       }
