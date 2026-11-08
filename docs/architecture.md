@@ -37,7 +37,7 @@ Every deletion goes through this path, no exceptions:
 1. A scanner produces items. Each item has `removalTargets`: the URLs that will actually be removed.
 2. The user reviews and selects items in the UI, then confirms in a dialog.
 3. `FileRemover.remove(_:method:allowedRoots:)` processes each URL:
-   - `PathGuard.check` **rejects** the URL if it isn't a file URL; if it's a protected location (the home folder, `~/Documents`, `~/Library`, `/System`, `/Applications` and similar); if it's inside iCloud Drive or `~/Library/CloudStorage`; if it's on the user's [exclusion list](#exclusion-list), inside an excluded folder, or holds an excluded item; or if it isn't **strictly inside** one of the `allowedRoots`. `..` and symlinks in parent folders are resolved first, so traversal tricks can't slip through.
+   - `PathGuard.check` **rejects** the URL if it isn't a file URL; if it's a protected location (the home folder, `~/Documents`, `~/Library`, `/System`, `/Applications` and similar); if it's inside a system folder such as `/System` or `/usr`, iCloud Drive or `~/Library/CloudStorage`; if it's on the user's [exclusion list](#exclusion-list), inside an excluded folder, or holds an excluded item; or if it isn't **strictly inside** one of the `allowedRoots`. `..` and symlinks in parent folders are resolved first, so traversal tricks can't slip through.
    - If it passes, the item is moved with `trashItem` (the default) or deleted with `removeItem` (only for the contents of the Trash).
 4. The result lists what succeeded and what failed, with reasons, and is shown to the user.
 
@@ -122,7 +122,7 @@ The UI is in Indonesian and English.
 
 1. Logic → `Packages/HavusCore/Sources/HavusCore/<Feature>/`, with tests in `Tests/HavusCoreTests/`.
 2. UI → `Havus/Features/<Feature>/` (model + view). Use the components in `Havus/Shared/Components.swift` and the tokens in `Design.swift`. Outside a `List` or `ScrollView`, never use `.fixedSize(horizontal: false, vertical: true)` on text, such as in an `ActionBar`: the window measures the page's minimum height with the text squeezed narrow, where it grows hundreds of points tall, and the whole page, sidebar included, then overflows the window and gets cut off.
-3. Need a new page? Add a case to `SidebarItem`.
+3. Need a new page? Add a case to `SidebarItem`. In `RootView`, the compiler then asks for the page's view in `detail`, but not for its row in the sidebar or the `setExclusions(_:)` call that hands its model the exclusion list.
 4. Write UI text as Indonesian literals in SwiftUI, then add the English in `Localizable.xcstrings`. See [Languages](#languages) and the glossary in [CONTRIBUTING.md](../CONTRIBUTING.md).
 5. Offering files for removal? Take the page's `ExclusionList` (see `setExclusions(_:)` in the existing models) and pass it to the scanner and to `PathGuard`.
 

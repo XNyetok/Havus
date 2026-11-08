@@ -6,7 +6,7 @@ Issues and pull requests in English are preferred. Bahasa Indonesia is welcome t
 
 ## Setup
 
-Requirements: macOS 14+, Xcode 26+ (Swift 6.2+). Optional but recommended: `gitleaks` (`brew install gitleaks`).
+Requirements: Xcode 26+ (Swift 6.2+), which runs on macOS 15.6 or later. Havus itself supports macOS 14+. Optional but recommended: `gitleaks` (`brew install gitleaks`).
 
 ```sh
 git clone https://github.com/XNyetok/Havus.git
@@ -37,9 +37,9 @@ Packages/HavusCore/     Core logic: scanning, cleanup rules, PathGuard, removal 
 Config/                 Build settings (xcconfig)
 design/                 App icon source (SVG), rendered to PNGs by make icon
 docs/                   Stack decision, architecture, maintainer guide
-scripts/                Bootstrap, release build and icon rendering
+scripts/                Bootstrap, release build and signing, string check, icon rendering, download stats
 .githooks/              Pre-commit hook
-.github/                CI, release, issue and PR templates
+.github/                CI, release and website workflows, issue and PR templates
 ```
 
 See [docs/architecture.md](docs/architecture.md) for details.
