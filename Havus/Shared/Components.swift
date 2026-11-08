@@ -180,6 +180,8 @@ struct EmptyState<Actions: View>: View {
     var tint: Color = .accentColor
     let title: Text
     let message: Text
+    /// Something to know before the first step, such as a permission macOS is going to ask for.
+    var note: Text?
     @ViewBuilder var actions: Actions
 
     var body: some View {
@@ -193,6 +195,11 @@ struct EmptyState<Actions: View>: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: Design.messageWidth)
+            if let note {
+                NoticeBanner(tone: .warning, symbol: "lock.shield", message: note)
+                    .frame(maxWidth: Design.messageWidth)
+                    .padding(.top, Design.Spacing.xs)
+            }
             HStack(spacing: Design.Spacing.s) {
                 actions
             }
@@ -336,6 +343,15 @@ struct FullDiskAccessBanner: View {
                 Button("Cek Lagi") { permissions.refresh() }
             }
         }
+    }
+}
+
+/// What to expect without Full Disk Access, before a page looks through the whole home folder.
+enum FullDiskAccessNote {
+    static var text: Text {
+        Text(
+            "Akses Disk Penuh belum nyala. macOS bakal nanya izin buat Desktop, Dokumen, dan Unduhan, sedangkan pustaka Foto dan Musik dilewati dulu."
+        )
     }
 }
 

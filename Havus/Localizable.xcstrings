@@ -577,6 +577,16 @@
         }
       }
     },
+    "Akses Disk Penuh belum nyala. macOS bakal nanya izin buat Desktop, Dokumen, dan Unduhan, sedangkan pustaka Foto dan Musik dilewati dulu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full Disk Access is off. macOS will ask about your Desktop, Documents and Downloads, and the Photos and Music libraries are left out for now."
+          }
+        }
+      }
+    },
     "Akses Disk Penuh udah aktif" : {
       "localizations" : {
         "en" : {
@@ -1105,6 +1115,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Caches, logs, and leftover files that are safe to throw away"
+          }
+        }
+      }
+    },
+    "Cari Aja" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search Anyway"
           }
         }
       }
@@ -2900,6 +2920,16 @@
         }
       }
     },
+    "Pindai Aja" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan Anyway"
+          }
+        }
+      }
+    },
     "Pindai Lagi" : {
       "localizations" : {
         "en" : {
@@ -3006,6 +3036,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Its program is gone, so this agent can't run anymore. It's safe to remove."
+          }
+        }
+      }
+    },
+    "Pustaka Foto dan Musik nggak ikut dicari, karena Akses Disk Penuh belum nyala." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Photos and Music libraries weren't searched, because Full Disk Access is off."
           }
         }
       }

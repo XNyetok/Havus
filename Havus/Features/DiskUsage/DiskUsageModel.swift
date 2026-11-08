@@ -20,7 +20,7 @@ final class DiskUsageModel {
     /// Only for the "Dikecualiin" tag: the map measures excluded items too, since it removes nothing.
     private(set) var exclusions = ExclusionList()
 
-    @ObservationIgnored private let scanner = DiskUsageScanner()
+    @ObservationIgnored private var scanner = DiskUsageScanner()
     @ObservationIgnored private let home = URL.homeDirectory
     @ObservationIgnored private var task: Task<Void, Never>?
     /// Every scan gets the next number, so progress from a scan that was replaced never shows up.
@@ -42,6 +42,9 @@ final class DiskUsageModel {
         task?.cancel()
         scansStarted += 1
         let scan = scansStarted
+        // Without Full Disk Access, opening the Photos library or the Music and TV folders makes macOS ask for a
+        // permission of their own, so the map leaves them closed and shows them as unreadable.
+        scanner = DiskUsageScanner(skipping: FullDiskAccess.isGranted(home: home) ? nil : MediaLibraries(home: home))
         let scanner = self.scanner
         let home = self.home
         progress = nil

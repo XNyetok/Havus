@@ -44,8 +44,10 @@ final class LargeFilesModel {
     private(set) var files: [LargeFile] = []
     var selection: Set<LargeFile.ID> = []
     private(set) var lastRemoval: RemovalSummary?
+    /// The last search left the Photos library and the Music and TV folders out, for want of Full Disk Access.
+    private(set) var skippedMediaLibraries = false
 
-    @ObservationIgnored private let finder = LargeFileFinder()
+    @ObservationIgnored private var finder = LargeFileFinder()
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored private var exclusions = ExclusionList()
 
@@ -63,6 +65,12 @@ final class LargeFilesModel {
 
     func search() {
         task?.cancel()
+        // Without Full Disk Access, even looking at a file in the Photos library or the Music and TV folders makes
+        // macOS ask for a permission of their own, so the search leaves them out.
+        let home = finder.home
+        let skipped = FullDiskAccess.isGranted(home: home) ? nil : MediaLibraries(home: home)
+        finder = LargeFileFinder(home: home, skipping: skipped)
+        skippedMediaLibraries = skipped != nil
         let finder = self.finder
         let exclusions = self.exclusions
         let criteria = LargeFileFinder.Criteria(minimumSize: minimumSize.rawValue, notOpenedSince: lastOpened.cutoff)
