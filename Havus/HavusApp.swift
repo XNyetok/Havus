@@ -19,7 +19,10 @@ struct HavusApp: App {
                 .environment(updates)
                 .environment(exclusions)
                 .environment(problemReports)
-                .frame(minWidth: 860, minHeight: 560)
+                // Wide enough for the widest page, Hapus Aplikasi: the sidebar (250), the app list (270) and its
+                // detail (380). The window doesn't learn the minimum widths inside that page's HSplitView, so a
+                // narrower window pushes the sidebar off its left edge.
+                .frame(minWidth: 900, minHeight: 560)
         }
         .defaultSize(width: 1040, height: 700)
         .windowResizability(.contentMinSize)
