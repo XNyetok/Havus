@@ -64,16 +64,16 @@ Force-push only to a pull request branch; the ruleset blocks it on `main`. When 
 2. Create and push a version tag:
 
    ```sh
-   git tag -a v0.1.0 -m "Havus 0.1.0"
-   git push origin v0.1.0
+   git tag -a vX.Y.Z -m "Havus X.Y.Z"
+   git push origin vX.Y.Z
    ```
 
-3. The **Release** workflow runs in the `release` environment. It imports the [release certificate](#release-signing-certificate), builds a universal app signed with it, and creates a **draft release** with `Havus-0.1.0.zip` and `Havus-0.1.0.zip.sha256`. It stops if the certificate is missing or the app doesn't match it.
+3. The **Release** workflow runs in the `release` environment. It imports the [release certificate](#release-signing-certificate), builds a universal app signed with it, and creates a **draft release** with `Havus-X.Y.Z.zip` and `Havus-X.Y.Z.zip.sha256`. It stops if the certificate is missing or the app doesn't match it.
 4. Review the draft, edit the release notes, and publish.
 
 Publishing is what reaches users: Havus's update check reads GitHub's *latest* release, so users who turned the check on hear about it within a day. Drafts and prereleases never show up. Keep tags in the `vX.Y.Z` form, because the app ignores any other tag and links to the release by it (`havus.web.id/changelog/#vX.Y.Z`, or `/en/changelog/#vX.Y.Z` when Havus runs in English).
 
-The app version comes from the tag name, so there's no need to edit `MARKETING_VERSION` by hand. To try it locally first, run `make release VERSION=0.1.0`; the output lands in `build/release/`. A local build is ad-hoc signed unless you import the certificate, as described below.
+The app version comes from the tag name, so there's no need to edit `MARKETING_VERSION` by hand. To try it locally first, run `make release VERSION=X.Y.Z`; the output lands in `build/release/`. A local build is ad-hoc signed unless you import the certificate, as described below.
 
 ## Release signing certificate
 
@@ -112,7 +112,7 @@ To sign a release on your Mac, for example while GitHub Actions is down:
 HAVUS_SIGNING_P12_BASE64="$(base64 -i havus-release-signing.p12 | tr -d '\n')" \
 HAVUS_SIGNING_P12_PASSWORD="$(cat havus-release-signing-password.txt)" \
   scripts/import-signing-certificate.sh /tmp/havus-signing.keychain-db
-HAVUS_SIGNING_KEYCHAIN=/tmp/havus-signing.keychain-db make release VERSION=0.3.0
+HAVUS_SIGNING_KEYCHAIN=/tmp/havus-signing.keychain-db make release VERSION=X.Y.Z
 security delete-keychain /tmp/havus-signing.keychain-db
 ```
 

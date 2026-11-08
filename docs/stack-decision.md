@@ -69,7 +69,7 @@ What that means:
 
 - Since macOS 15, the right-click → Open trick is gone. Users have to go to System Settings → Privacy & Security → **Open Anyway**, once for each version.
 - Full Disk Access is tied to the app's signature. Up to 0.2.0, releases were ad-hoc signed, and an ad-hoc signature changes with every build, so users had to grant the permission again after each update. Since 0.3.0, every release is signed with the same certificate, so the permission survives updates. See [Release signing certificate](maintainer.md#release-signing-certificate).
-- Homebrew 5.0 (November 2025) removed the `--no-quarantine` option, and casks that fail Gatekeeper checks were scheduled to be disabled on 1 September 2026. The official Homebrew Cask only becomes realistic after notarization.
+- Homebrew 5.0 (November 2025) removed the `--no-quarantine` option, and since 1 September 2026 Homebrew disables casks that fail Gatekeeper checks. The official Homebrew Cask only becomes realistic after notarization.
 
 The upgrade path: Apple Developer Program → Developer ID certificate → notarization (`notarytool`) → Homebrew Cask, and optionally Sparkle for auto-updates. The steps are in [maintainer.md](maintainer.md).
 

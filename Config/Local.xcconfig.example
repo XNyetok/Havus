@@ -11,6 +11,3 @@
 // Your Team ID: Xcode → Settings → Accounts, or https://developer.apple.com/account
 DEVELOPMENT_TEAM = ABCDE12345
 CODE_SIGN_IDENTITY = Apple Development
-
-// Optional: your own bundle ID, so a dev build doesn't clash with an installed release.
-// PRODUCT_BUNDLE_IDENTIFIER = com.example.havus.dev
