@@ -557,12 +557,32 @@
         }
       }
     },
+    "Akses Disk Penuh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full Disk Access"
+          }
+        }
+      }
+    },
     "Akses Disk Penuh belum aktif" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Full Disk Access isn't on yet"
+          }
+        }
+      }
+    },
+    "Aktif" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On"
           }
         }
       }
@@ -593,6 +613,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Xcode archives"
+          }
+        }
+      }
+    },
+    "Bahasa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language"
           }
         }
       }
@@ -759,6 +789,16 @@
         }
       }
     },
+    "Biar Havus bisa ngecek semua lokasi, termasuk Tong Sampah, lampiran Mail, dan data app lain." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So Havus can check every location, including the Trash, Mail attachments and other apps' data."
+          }
+        }
+      }
+    },
     "Bisa juga dari hasil pindai: klik kanan sebuah item, lalu pilih **Masukin ke Pengecualian**." : {
       "localizations" : {
         "en" : {
@@ -805,6 +845,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Show %@ in Uninstaller"
+          }
+        }
+      }
+    },
+    "Buka Bahasa & Wilayah" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Language & Region"
           }
         }
       }
@@ -1109,6 +1159,16 @@
         }
       }
     },
+    "Cek Sekarang" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check Now"
+          }
+        }
+      }
+    },
     "Cek Versi Baru Otomatis" : {
       "localizations" : {
         "en" : {
@@ -1145,6 +1205,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Check your internet connection, then try again later."
+          }
+        }
+      }
+    },
+    "Cek versi baru otomatis" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check for updates automatically"
           }
         }
       }
@@ -1816,6 +1886,16 @@
         }
       }
     },
+    "Izin" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permissions"
+          }
+        }
+      }
+    },
     "Jalan Otomatis" : {
       "localizations" : {
         "en" : {
@@ -2222,6 +2302,16 @@
         }
       }
     },
+    "Mau bahasa lain khusus buat Havus? Tambahin Havus di bagian **Applications**, terus pilih bahasanya." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want a different language just for Havus? Add Havus under **Applications**, then choose its language."
+          }
+        }
+      }
+    },
     "Mau dikabarin kalau ada versi baru?" : {
       "localizations" : {
         "en" : {
@@ -2398,6 +2488,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unused"
+          }
+        }
+      }
+    },
+    "Ngikutin bahasa Mac kamu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follows your Mac's language"
           }
         }
       }
@@ -2874,6 +2974,16 @@
         }
       }
     },
+    "Sehari sekali, Havus nanya nomor versi terbaru ke GitHub. Nggak ada data apa pun soal kamu atau Mac kamu yang dikirim." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once a day, Havus asks GitHub for the latest version number. Nothing about you or your Mac is sent."
+          }
+        }
+      }
+    },
     "Selalu jalan" : {
       "localizations" : {
         "en" : {
@@ -3154,6 +3264,16 @@
         }
       }
     },
+    "Umum" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "General"
+          }
+        }
+      }
+    },
     "Versi %@" : {
       "localizations" : {
         "en" : {
@@ -3186,6 +3306,26 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Versi %1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "Versi baru" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updates"
+          }
+        }
+      }
+    },
+    "Versi yang kamu pakai" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your version"
           }
         }
       }
