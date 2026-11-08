@@ -1,7 +1,8 @@
 name: Release
 
 # Push a tag like v0.1.0 → a DRAFT GitHub Release with a universal zip + SHA-256, signed with the Havus
-# release certificate. Nothing is published until a maintainer reviews the draft.
+# release certificate, and the debug symbols that make crash reports readable (Havus.app.dSYM.zip).
+# Nothing is published until a maintainer reviews the draft.
 #
 # The certificate lives in the "release" environment (secrets HAVUS_SIGNING_P12_BASE64 and
 # HAVUS_SIGNING_P12_PASSWORD), which only tags matching v*.*.* may use. See docs/maintainer.md.
@@ -52,6 +53,7 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             build/release/Havus-*.zip \
             build/release/Havus-*.zip.sha256 \
+            build/release/Havus.app.dSYM.zip \
             --repo "$GITHUB_REPOSITORY" \
             --draft --verify-tag --generate-notes \
             --title "Havus ${GITHUB_REF_NAME#v}"

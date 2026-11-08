@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Builds a universal (Apple silicon + Intel) Havus.app and packs it as
-# build/release/Havus-<version>.zip plus a SHA-256 checksum file.
+# build/release/Havus-<version>.zip plus a SHA-256 checksum file, and its debug symbols as
+# build/release/Havus.app.dSYM.zip.
 #
 # Usage: scripts/build-release.sh <version> [build-number]
 #
@@ -32,6 +33,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/build/release"
 ARCHIVE="$OUT/Havus.xcarchive"
 ZIP="Havus-$VERSION.zip"
+# Not Havus-*.zip: havus.web.id offers the first release asset with such a name as the download.
+DSYM_ZIP="Havus.app.dSYM.zip"
 
 rm -rf "$OUT"
 mkdir -p "$OUT"
@@ -68,8 +71,22 @@ fi
 codesign --verify --strict "$APP"
 echo "Architectures: $(lipo -archs "$APP/Contents/MacOS/Havus")"
 
+# Release builds are stripped, so a crash report shows Havus's own code only as offsets. The
+# dSYM turns them into function names and line numbers, but only for the binary it was built
+# with: a crash report names the binary by its UUID.
+DSYM="$ARCHIVE/dSYMs/Havus.app.dSYM"
+APP_UUIDS="$(dwarfdump --uuid "$APP/Contents/MacOS/Havus" | awk '{ print $2, $3 }' | sort)"
+DSYM_UUIDS="$(dwarfdump --uuid "$DSYM" | awk '{ print $2, $3 }' | sort)"
+if [[ -z "$APP_UUIDS" || "$APP_UUIDS" != "$DSYM_UUIDS" ]]; then
+  echo "The dSYM doesn't match the app binary." >&2
+  exit 1
+fi
+echo "Binary UUIDs, matched by the dSYM:"
+echo "$APP_UUIDS"
+
 cd "$OUT"
 ditto -c -k --sequesterRsrc --keepParent "$APP" "$ZIP"
 shasum -a 256 "$ZIP" > "$ZIP.sha256"
-echo "Done: build/release/$ZIP"
+ditto -c -k --keepParent "$DSYM" "$DSYM_ZIP"
+echo "Done: build/release/$ZIP and build/release/$DSYM_ZIP"
 cat "$ZIP.sha256"
