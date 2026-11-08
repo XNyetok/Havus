@@ -7,8 +7,9 @@ struct UpdateBanner: View {
 
     var body: some View {
         if let update = updates.availableUpdate, !updates.isBannerHidden {
-            NoticeCard(
-                symbol: "arrow.down.circle",
+            NoticeBanner(
+                tone: .success,
+                symbol: "arrow.down",
                 title: UpdateCopy.title(update),
                 message: UpdateCopy.message(update)
             ) {
@@ -25,7 +26,8 @@ struct AutomaticCheckPrompt: View {
 
     var body: some View {
         if !updates.hasChosenAutomaticChecks {
-            NoticeCard(
+            NoticeBanner(
+                tone: .neutral,
                 symbol: "bell.badge",
                 title: Text("Mau dikabarin kalau ada versi baru?"),
                 message: Text(

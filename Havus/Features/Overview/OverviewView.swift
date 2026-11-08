@@ -8,7 +8,6 @@ struct OverviewView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Design.Spacing.xl) {
-                PageHeader(item: .overview)
                 UpdateBanner()
                 if let disk {
                     DiskCard(disk: disk) { open(.diskUsage) }
@@ -31,7 +30,7 @@ struct OverviewView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
-            .padding(Design.Spacing.xxl)
+            .padding(Design.pageMargin)
             .frame(maxWidth: Design.readableWidth, alignment: .leading)
             .frame(maxWidth: .infinity)
         }

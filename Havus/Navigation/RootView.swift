@@ -30,10 +30,13 @@ struct RootView: View {
             }
             .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 300)
         } detail: {
+            // The page's name and what it's for sit in the toolbar, like in Finder and System Settings, so the page
+            // itself starts with its content.
             detail
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .navigationTitle(Text(selection.title))
+                .navigationSubtitle(Text(selection.subtitle))
         }
-        .hidingToolbarTitle()
         .updateCheckAlert(updates)
         // Every page scans and removes with the latest list, and drops results the user just excluded.
         .onChange(of: exclusions.list, initial: true) { _, list in
@@ -82,18 +85,6 @@ struct RootView: View {
                 uninstaller.show(app)
                 selection = .uninstaller
             }
-        }
-    }
-}
-
-extension View {
-    /// Every page has its own large title, so the toolbar doesn't need one (macOS 15+).
-    @ViewBuilder
-    fileprivate func hidingToolbarTitle() -> some View {
-        if #available(macOS 15.0, *) {
-            toolbar(removing: .title)
-        } else {
-            self
         }
     }
 }

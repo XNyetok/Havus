@@ -75,16 +75,6 @@
         }
       }
     },
-    "%@ bisa dibersihin" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ can be cleaned up"
-          }
-        }
-      }
-    },
     "%@ dan %lld file sisanya udah dipindah ke Tong Sampah (%@)." : {
       "localizations" : {
         "en" : {
@@ -379,44 +369,6 @@
         }
       }
     },
-    "%lld file · %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%#@files@ · %2$@"
-          },
-          "substitutions" : {
-            "files" : {
-              "argNum" : 1,
-              "formatSpecifier" : "lld",
-              "variations" : {
-                "plural" : {
-                  "one" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "%arg file"
-                    }
-                  },
-                  "other" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "%arg files"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld file · %2$@"
-          }
-        }
-      }
-    },
     "%lld item dilewati karena lagi dipakai atau butuh izin." : {
       "localizations" : {
         "en" : {
@@ -514,6 +466,28 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld launch agents"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld lokasi butuh Akses Disk Penuh buat dicek." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld location needs Full Disk Access to be checked."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld locations need Full Disk Access to be checked."
                 }
               }
             }
@@ -713,12 +687,12 @@
         }
       }
     },
-    "Buang aplikasi sekalian sama file sisanya." : {
+    "Buang aplikasi sekalian sama file sisanya" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Remove apps together with their leftover files."
+            "value" : "Remove apps together with their leftover files"
           }
         }
       }
@@ -769,6 +743,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "Buka daftarnya" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows its items"
           }
         }
       }
@@ -963,12 +947,12 @@
         }
       }
     },
-    "Cache, log, dan sisa file yang aman dibuang." : {
+    "Cache, log, dan sisa file yang aman dibuang" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Caches, logs, and leftover files that are safe to throw away."
+            "value" : "Caches, logs, and leftover files that are safe to throw away"
           }
         }
       }
@@ -1009,16 +993,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Find files that take up space"
-          }
-        }
-      }
-    },
-    "Cari file yang makan tempat tapi jarang kamu buka." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Find files that take up space but rarely get opened."
           }
         }
       }
@@ -1083,12 +1057,12 @@
         }
       }
     },
-    "Coba turunin ukuran minimal atau ganti filter terakhir dibuka." : {
+    "Coba turunin ukuran minimal, atau cari juga file yang masih sering dibuka." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Try a smaller minimum size or a different Last opened filter."
+            "value" : "Try a smaller minimum size, or include files you still open often."
           }
         }
       }
@@ -1163,12 +1137,12 @@
         }
       }
     },
-    "Di sini nggak ada yang dihapus. Buat bersihin, pakai **Sampah Sistem**, **Sampah Developer**, atau **File Gede & Lama**." : {
+    "Di sini cuma dilihat, nggak ada yang dihapus. Buat bersihin, pakai **Sampah Sistem**, **Sampah Developer**, atau **File Gede & Lama**." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nothing is removed here. To clean up, use **System Junk**, **Developer Junk** or **Large & Old Files**."
+            "value" : "This page only looks: nothing is removed here. To clean up, use **System Junk**, **Developer Junk** or **Large & Old Files**."
           }
         }
       }
@@ -1179,6 +1153,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Opened %@"
+          }
+        }
+      }
+    },
+    "Dibuka kapan aja" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opened any time"
           }
         }
       }
@@ -1323,6 +1307,16 @@
         }
       }
     },
+    "File yang makan tempat tapi jarang kamu buka" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Files that take up space but rarely get opened"
+          }
+        }
+      }
+    },
     "File-nya kosong atau rusak, jadi nggak pernah dijalanin macOS." : {
       "localizations" : {
         "en" : {
@@ -1349,6 +1343,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This folder is empty."
+          }
+        }
+      }
+    },
+    "Folder mana yang paling makan tempat" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Which folders take up the most space"
           }
         }
       }
@@ -1750,16 +1754,6 @@
         }
       }
     },
-    "Kapan aja" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Any time"
-          }
-        }
-      }
-    },
     "Kata launchctl: %@" : {
       "localizations" : {
         "en" : {
@@ -1790,12 +1784,12 @@
         }
       }
     },
-    "Kondisi Mac kamu sekarang." : {
+    "Kondisi Mac kamu sekarang" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "How your Mac is doing right now."
+            "value" : "How your Mac is doing right now"
           }
         }
       }
@@ -1910,18 +1904,12 @@
         }
       }
     },
-    "Lagi nyari sampah… %lld dari %lld lokasi" : {
+    "Lagi nyari sampah…" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Looking for junk… %lld of %lld locations"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Lagi nyari sampah… %1$lld dari %2$lld lokasi"
+            "value" : "Looking for junk…"
           }
         }
       }
@@ -1952,46 +1940,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "More than %@"
-          }
-        }
-      }
-    },
-    "Lebih dari 1 tahun lalu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "More than a year ago"
-          }
-        }
-      }
-    },
-    "Lebih dari 3 bulan lalu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "More than 3 months ago"
-          }
-        }
-      }
-    },
-    "Lebih dari 6 bulan lalu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "More than 6 months ago"
-          }
-        }
-      }
-    },
-    "Lihat folder mana yang paling makan tempat." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "See which folders take up the most space."
           }
         }
       }
@@ -2042,6 +1990,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "App logs"
+          }
+        }
+      }
+    },
+    "Lokasi %lld dari %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location %lld of %lld"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Lokasi %1$lld dari %2$lld"
           }
         }
       }
@@ -2112,6 +2076,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "pnpm's metadata cache. Its main store isn't touched."
+          }
+        }
+      }
+    },
+    "Minimal %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At least %@"
           }
         }
       }
@@ -2192,6 +2166,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couldn't check for updates"
+          }
+        }
+      }
+    },
+    "Nggak dibuka 3 bulan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not opened in 3 months"
+          }
+        }
+      }
+    },
+    "Nggak dibuka 6 bulan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not opened in 6 months"
+          }
+        }
+      }
+    },
+    "Nggak dibuka setahun" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not opened in a year"
           }
         }
       }
@@ -2498,12 +2502,12 @@
         }
       }
     },
-    "Program yang jalan sendiri di belakang layar, tanpa kamu buka." : {
+    "Program yang jalan sendiri di belakang layar" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Programs that run in the background without you opening them."
+            "value" : "Programs that run in the background on their own"
           }
         }
       }
@@ -2718,12 +2722,12 @@
         }
       }
     },
-    "Sisa build dan cache tool ngoding yang bisa dibikin ulang." : {
+    "Sisa build dan cache tool ngoding yang bisa dibikin ulang" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Build leftovers and coding tool caches that can be rebuilt."
+            "value" : "Build leftovers and coding tool caches that can be rebuilt"
           }
         }
       }
@@ -2818,12 +2822,22 @@
         }
       }
     },
-    "Tutup %@" : {
+    "Tutup Aplikasi" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quit %@"
+            "value" : "Quit App"
+          }
+        }
+      }
+    },
+    "Tutup daftarnya" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hides its items"
           }
         }
       }
@@ -2890,6 +2904,58 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Xcode DerivedData"
+          }
+        }
+      }
+    },
+    "bisa dibersihin" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "can be cleaned up"
+          }
+        }
+      }
+    },
+    "di %lld file" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "in %lld file"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "in %lld files"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "di akun kamu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in your account"
+          }
+        }
+      }
+    },
+    "di folder ini" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in this folder"
           }
         }
       }

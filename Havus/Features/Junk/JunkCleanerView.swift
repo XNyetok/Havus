@@ -6,13 +6,20 @@ struct JunkCleanerView: View {
     let page: SidebarItem
     @State private var isConfirmingClean = false
     @State private var isConfirmingEmptyTrash = false
+    /// Rules whose items are listed below them.
+    @State private var expanded: Set<JunkRule.ID> = []
 
     var body: some View {
-        VStack(spacing: 0) {
-            PageHeader(item: page)
-                .padding([.horizontal, .top], Design.Spacing.xxl)
-                .padding(.bottom, Design.Spacing.l)
+        PhaseContent(key: stateKey) {
             content
+        }
+        .toolbar {
+            if model.phase != .idle {
+                ToolbarItem(placement: .primaryAction) {
+                    RescanButton { model.scan() }
+                        .disabled(isBusy)
+                }
+            }
         }
         .confirmationDialog(
             Text("Bersihin \(model.selectedItems.count) item?"), isPresented: $isConfirmingClean,
@@ -35,46 +42,67 @@ struct JunkCleanerView: View {
         }
     }
 
+    private var isBusy: Bool {
+        switch model.phase {
+        case .scanning, .cleaning: true
+        default: false
+        }
+    }
+
+    /// The state on screen, without its counters, so progress updates don't restart the crossfade.
+    private var stateKey: String {
+        switch model.phase {
+        case .idle: "idle"
+        case .scanning: "scanning"
+        case .results: model.visibleResults.isEmpty ? "clean" : "results"
+        case .cleaning: "cleaning"
+        case .finished: "finished"
+        }
+    }
+
     @ViewBuilder
     private var content: some View {
         switch model.phase {
         case .idle:
-            MessageView(
+            EmptyState(
                 symbol: page.symbol,
-                title: model.group == .system ? "Siap bersih-bersih?" : "Bersihin sisa ngoding?",
+                title: Text(model.group == .system ? "Siap bersih-bersih?" : "Bersihin sisa ngoding?"),
                 message: Text(
                     model.group == .system
                         ? "Havus bakal ngecek cache, log, dan file sisa yang aman dibuang. Kamu tetap bisa milih mana yang mau dihapus."
                         : "Havus bakal ngecek DerivedData Xcode, cache simulator, sampai cache npm, Homebrew, dan Cargo."
-                ),
-                actionTitle: "Pindai Sekarang"
-            ) { model.scan() }
+                )
+            ) {
+                Button("Pindai Sekarang") { model.scan() }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+            }
 
         case .scanning(let finished, let total):
-            VStack(spacing: Design.Spacing.l) {
-                ProgressView(value: Double(finished), total: Double(max(total, 1)))
-                    .frame(maxWidth: 320)
-                Text("Lagi nyari sampah… \(finished) dari \(total) lokasi")
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
-                Button("Batal") { model.cancel() }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            ScanProgress(
+                symbol: page.symbol,
+                title: Text("Lagi nyari sampah…"),
+                fraction: Double(finished) / Double(max(total, 1)),
+                detail: Text("Lokasi \(finished) dari \(total)"),
+                cancel: { model.cancel() }
+            )
 
         case .results where model.visibleResults.isEmpty:
-            MessageView(
+            EmptyState(
                 symbol: "checkmark.seal",
-                title: "Bersih kinclong!",
-                message: Text("Nggak ada sampah yang ketemu di sini."),
-                actionTitle: "Pindai Lagi"
-            ) { model.scan() }
+                title: Text("Bersih kinclong!"),
+                message: Text("Nggak ada sampah yang ketemu di sini.")
+            ) {
+                Button("Pindai Lagi") { model.scan() }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+            }
 
         case .results:
             results
 
         case .cleaning:
-            ProgressView("Lagi dibersihin…")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            ScanProgress(symbol: page.symbol, title: Text("Lagi dibersihin…"))
 
         case .finished(let summary):
             FinishedView(
@@ -86,32 +114,28 @@ struct JunkCleanerView: View {
 
     private var results: some View {
         VStack(spacing: 0) {
-            List {
-                Section {
-                    ForEach(model.visibleResults) { result in
-                        JunkResultRow(result: result, model: model)
+            RowList {
+                SummaryHeader {
+                    RollingSize(bytes: model.totalSize)
+                } caption: {
+                    Text("bisa dibersihin")
+                } notes: {
+                    LockedNotice(count: model.visibleResults.filter { $0.status == .noPermission }.count)
+                }
+            } content: {
+                ForEach(Array(model.visibleResults.enumerated()), id: \.element.id) { index, result in
+                    if index > 0 {
+                        RowDivider(inset: Design.Column.checkbox + Design.Spacing.m)
                     }
-                } header: {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text("\(Format.bytes(model.totalSize)) bisa dibersihin")
-                            .font(.title2.weight(.semibold))
-                            .foregroundStyle(.primary)
-                        Spacer()
-                        Button("Pindai Ulang") { model.scan() }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(.tint)
-                    }
-                    .padding(.bottom, Design.Spacing.s)
+                    JunkResultRow(result: result, model: model, isExpanded: isExpanded(result.id))
                 }
             }
-            .listStyle(.inset)
-            .scrollContentBackground(.hidden)
-            .contentMargins(.horizontal, Design.Spacing.l, for: .scrollContent)
-
             ActionBar {
                 Text("\(model.selection.count) item dipilih · \(Format.bytes(model.selectedSize))")
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .animation(Design.Motion.quick, value: model.selectedSize)
             } trailing: {
                 Button("Bersihin") { isConfirmingClean = true }
                     .buttonStyle(.borderedProminent)
@@ -121,40 +145,79 @@ struct JunkCleanerView: View {
             }
         }
     }
+
+    private func isExpanded(_ id: JunkRule.ID) -> Binding<Bool> {
+        Binding(
+            get: { expanded.contains(id) },
+            set: { isOn in
+                if isOn {
+                    expanded.insert(id)
+                } else {
+                    expanded.remove(id)
+                }
+            })
+    }
 }
 
+/// One banner for every location macOS kept Havus out of, instead of a button on each of their rows.
+private struct LockedNotice: View {
+    let count: Int
+    @Environment(PermissionCenter.self) private var permissions
+
+    var body: some View {
+        if count > 0 {
+            NoticeBanner(
+                tone: .warning, symbol: "lock.fill",
+                message: Text("\(count) lokasi butuh Akses Disk Penuh buat dicek.")
+            ) {
+                Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
+            }
+        }
+    }
+}
+
+/// A rule's row: everything it found in one line, and its items below when it's opened.
 private struct JunkResultRow: View {
     let result: JunkScanResult
     let model: JunkCleanerModel
-    @State private var isExpanded = false
+    @Binding var isExpanded: Bool
 
     var body: some View {
         if result.status == .noPermission {
-            PermissionRow(rule: result.rule)
+            LockedRow(rule: result.rule)
         } else if result.rule.strategy == .wholeContents, let item = result.items.first {
             let state: CheckState = model.selection.contains(item.id) ? .on : .off
-            header(state: state) { model.toggle(item) }
+            header(state: state, canExpand: false) { model.toggle(item) }
                 .selectableRow(state) { model.toggle(item) }
         } else {
-            DisclosureGroup(isExpanded: $isExpanded) {
+            let state = model.selectionState(of: result)
+            header(state: state, canExpand: true) { model.toggleAll(in: result) }
+                .rowHighlight()
+                .onTapGesture { toggleExpanded() }
+                .selectableGroupLabel(state) { model.toggleAll(in: result) }
+                .accessibilityAction { toggleExpanded() }
+                .accessibilityHint(isExpanded ? "Tutup daftarnya" : "Buka daftarnya")
+            if isExpanded {
                 ForEach(result.items) { item in
                     JunkItemRow(item: item, isSelected: model.selection.contains(item.id)) { model.toggle(item) }
+                        .transition(.opacity)
                 }
-            } label: {
-                let state = model.selectionState(of: result)
-                header(state: state) { model.toggleAll(in: result) }
-                    .selectableGroupLabel(state) { model.toggleAll(in: result) }
+                .padding(.bottom, Design.Spacing.s)
             }
         }
     }
 
-    private func header(state: CheckState, toggle: @escaping () -> Void) -> some View {
+    private func toggleExpanded() {
+        withAnimation(Design.Motion.quick) { isExpanded.toggle() }
+    }
+
+    private func header(state: CheckState, canExpand: Bool, toggle: @escaping () -> Void) -> some View {
         HStack(spacing: Design.Spacing.m) {
             SelectionBox(state: state, action: toggle)
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: Design.Spacing.xxs) {
                 HStack(spacing: Design.Spacing.s) {
                     Text(result.rule.id.title)
-                        .font(.body.weight(.medium))
+                        .font(Design.Typography.rowTitle)
                     if result.rule.removal == .deletePermanently {
                         Tag(text: "Permanen", tint: .red)
                     } else if result.rule.safety == .review {
@@ -166,15 +229,24 @@ private struct JunkResultRow: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
             }
-            Spacer()
+            Spacer(minLength: Design.Spacing.m)
             Text(Format.bytes(result.totalSize))
                 .monospacedDigit()
                 .foregroundStyle(.secondary)
+                .frame(minWidth: Design.Column.size, alignment: .trailing)
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+                .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                .frame(width: Design.Column.chevron)
+                .opacity(canExpand ? 1 : 0)
+                .accessibilityHidden(true)
         }
-        .padding(.vertical, Design.Spacing.xs)
+        .padding(.vertical, Design.Spacing.m)
     }
 }
 
+/// One item of a rule, under its row when the row is opened. Lines up with the row's name.
 private struct JunkItemRow: View {
     let item: JunkItem
     let isSelected: Bool
@@ -191,11 +263,17 @@ private struct JunkItemRow: View {
             if item.isInUse {
                 Tag(text: "Lagi dipakai")
             }
-            Spacer()
+            Spacer(minLength: Design.Spacing.m)
             Text(Format.bytes(item.size))
                 .monospacedDigit()
                 .foregroundStyle(.secondary)
+                .frame(minWidth: Design.Column.size, alignment: .trailing)
+            Color.clear
+                .frame(width: Design.Column.chevron, height: 1)
         }
+        .font(.callout)
+        .padding(.leading, Design.Column.checkbox + Design.Spacing.m)
+        .padding(.vertical, Design.Spacing.xs)
         .selectableRow(isSelected ? .on : .off, toggle: toggle)
         .contextMenu {
             Button("Tampilkan di Finder") { NSWorkspace.shared.activateFileViewerSelecting([item.url]) }
@@ -205,27 +283,28 @@ private struct JunkItemRow: View {
     }
 }
 
-private struct PermissionRow: View {
+/// A location macOS kept Havus out of. The banner above the list has the button to the setting.
+private struct LockedRow: View {
     let rule: JunkRule
-    @Environment(PermissionCenter.self) private var permissions
 
     var body: some View {
         HStack(spacing: Design.Spacing.m) {
             Image(systemName: "lock.fill")
                 .foregroundStyle(.secondary)
-                .frame(width: 20)
+                .frame(width: Design.Column.checkbox)
                 .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: Design.Spacing.xxs) {
                 Text(rule.id.title)
-                    .font(.body.weight(.medium))
+                    .font(Design.Typography.rowTitle)
+                    .foregroundStyle(.secondary)
                 Text("Butuh Akses Disk Penuh buat ngecek lokasi ini.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
-            Spacer()
-            Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
+            Spacer(minLength: Design.Spacing.m)
         }
-        .padding(.vertical, Design.Spacing.xs)
+        .padding(.vertical, Design.Spacing.m)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -233,13 +312,16 @@ private struct FinishedView: View {
     let summary: CleanupSummary
     let onScanAgain: () -> Void
     let onEmptyTrash: () -> Void
+    @State private var hasAppeared = false
 
     var body: some View {
         VStack(spacing: Design.Spacing.m) {
-            Image(systemName: summary.trashNeedsPermission ? "lock.shield" : "checkmark.circle")
-                .font(.system(size: 44, weight: .light))
-                .foregroundStyle(summary.trashNeedsPermission ? AnyShapeStyle(.orange) : AnyShapeStyle(.tint))
-                .accessibilityHidden(true)
+            SymbolDisc(
+                symbol: summary.trashNeedsPermission ? "lock.shield" : "checkmark",
+                tint: summary.trashNeedsPermission ? .orange : .accentColor
+            )
+            .symbolEffect(.bounce, value: hasAppeared)
+            .padding(.bottom, Design.Spacing.xs)
             Text(summary.trashNeedsPermission ? "Butuh izin dulu" : "Beres!")
                 .font(.title2.weight(.semibold))
             VStack(spacing: Design.Spacing.xs) {
@@ -263,8 +345,8 @@ private struct FinishedView: View {
             }
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)
-            .frame(maxWidth: 460)
-            HStack {
+            .frame(maxWidth: Design.messageWidth)
+            HStack(spacing: Design.Spacing.s) {
                 if summary.trashedBytes > 0 {
                     Button("Kosongin Tong Sampah", action: onEmptyTrash)
                 }
@@ -277,5 +359,6 @@ private struct FinishedView: View {
         }
         .padding(Design.Spacing.xl)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear { hasAppeared = true }
     }
 }

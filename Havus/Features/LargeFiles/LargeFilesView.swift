@@ -7,15 +7,33 @@ struct LargeFilesView: View {
     @State private var isConfirming = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            PageHeader(item: .largeFiles)
-                .padding([.horizontal, .top], Design.Spacing.xxl)
-                .padding(.bottom, Design.Spacing.l)
-            filters
-                .padding(.horizontal, Design.Spacing.xxl)
-                .padding(.bottom, Design.Spacing.l)
+        PhaseContent(key: stateKey) {
             content
         }
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Picker("Ukuran minimal", selection: $model.minimumSize) {
+                    ForEach(LargeFilesModel.MinimumSize.allCases) { size in
+                        Text("Minimal \(size.label)").tag(size)
+                    }
+                }
+                .help("Ukuran minimal")
+                .disabled(model.phase == .removing)
+                Picker("Terakhir dibuka", selection: $model.lastOpened) {
+                    ForEach(LargeFilesModel.LastOpened.allCases) { option in
+                        Text(option.label).tag(option)
+                    }
+                }
+                .help("Terakhir dibuka")
+                .disabled(model.phase == .removing)
+                if model.phase != .idle {
+                    RescanButton(title: "Cari Ulang") { model.search() }
+                        .disabled(model.phase == .searching || model.phase == .removing)
+                }
+            }
+        }
+        .onChange(of: model.minimumSize) { model.filtersChanged() }
+        .onChange(of: model.lastOpened) { model.filtersChanged() }
         .confirmationDialog(
             Text("Pindahin \(model.selectedFiles.count) file ke Tong Sampah?"), isPresented: $isConfirming,
             titleVisibility: .visible
@@ -27,60 +45,43 @@ struct LargeFilesView: View {
         }
     }
 
-    private var filters: some View {
-        HStack(spacing: Design.Spacing.l) {
-            Group {
-                Picker("Ukuran minimal", selection: $model.minimumSize) {
-                    ForEach(LargeFilesModel.MinimumSize.allCases) { size in
-                        Text(size.label).tag(size)
-                    }
-                }
-                Picker("Terakhir dibuka", selection: $model.lastOpened) {
-                    ForEach(LargeFilesModel.LastOpened.allCases) { option in
-                        Text(option.label).tag(option)
-                    }
-                }
-            }
-            .fixedSize()
-            .disabled(model.phase == .removing)
-            Spacer()
-            if model.phase != .idle {
-                Button("Cari Ulang") { model.search() }
-                    .disabled(model.phase == .searching || model.phase == .removing)
-            }
+    /// The state on screen. Removing keeps the list, so it's the same state as results.
+    private var stateKey: String {
+        switch model.phase {
+        case .idle: "idle"
+        case .searching: "searching"
+        case .results, .removing: model.files.isEmpty ? "none" : "results"
         }
-        // On the HStack, not the Group: a Group would attach each handler to both pickers and search twice.
-        .onChange(of: model.minimumSize) { model.filtersChanged() }
-        .onChange(of: model.lastOpened) { model.filtersChanged() }
     }
 
     @ViewBuilder
     private var content: some View {
         switch model.phase {
         case .idle:
-            MessageView(
-                symbol: "doc.text.magnifyingglass",
-                title: "Cari file yang makan tempat",
+            EmptyState(
+                symbol: SidebarItem.largeFiles.symbol,
+                title: Text("Cari file yang makan tempat"),
                 message: Text(
                     "Havus pakai index Spotlight buat nyari file gede di folder kamu (di luar Library). Nggak ada yang dihapus tanpa persetujuan kamu."
-                ),
-                actionTitle: "Cari Sekarang"
-            ) { model.search() }
+                )
+            ) {
+                Button("Cari Sekarang") { model.search() }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+            }
 
         case .searching:
-            VStack(spacing: Design.Spacing.m) {
-                ProgressView()
-                Text("Lagi nyari file gede…")
-                    .foregroundStyle(.secondary)
-                Button("Batal") { model.cancel() }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            ScanProgress(
+                symbol: SidebarItem.largeFiles.symbol,
+                title: Text("Lagi nyari file gede…"),
+                cancel: { model.cancel() }
+            )
 
         case .results, .removing:
             if model.files.isEmpty {
-                MessageView(
-                    symbol: "checkmark.seal", title: "Nggak ada yang cocok",
-                    message: Text("Coba turunin ukuran minimal atau ganti filter terakhir dibuka."))
+                EmptyState(
+                    symbol: "checkmark.seal", title: Text("Nggak ada yang cocok"),
+                    message: Text("Coba turunin ukuran minimal, atau cari juga file yang masih sering dibuka."))
             } else {
                 results
             }
@@ -89,47 +90,61 @@ struct LargeFilesView: View {
 
     private var results: some View {
         VStack(spacing: 0) {
-            List {
-                if let removal = model.lastRemoval {
-                    Label(
-                        removal.failedCount > 0
-                            ? "\(removal.count) file (\(Format.bytes(removal.bytes))) dipindah ke Tong Sampah, \(removal.failedCount) gagal."
-                            : "\(removal.count) file (\(Format.bytes(removal.bytes))) udah dipindah ke Tong Sampah.",
-                        systemImage: "checkmark.circle"
-                    )
-                    .foregroundStyle(.secondary)
-                }
-                Section {
-                    ForEach(model.files) { file in
-                        LargeFileRow(file: file, isSelected: model.selection.contains(file.id)) { model.toggle(file) }
-                            .contextMenu {
-                                Button("Tampilkan di Finder") { model.reveal(file) }
-                                Button("Buka") { model.open(file) }
-                                Divider()
-                                Button("Masukin ke Pengecualian") { exclusions.add([file.url]) }
-                            }
+            RowList {
+                SummaryHeader {
+                    RollingSize(bytes: model.totalSize)
+                } caption: {
+                    Text("di \(model.files.count) file")
+                } notes: {
+                    if let removal = model.lastRemoval {
+                        RemovalNotice(removal: removal)
                     }
-                } header: {
-                    Text("\(model.files.count) file · \(Format.bytes(model.totalSize))")
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(.primary)
-                        .padding(.bottom, Design.Spacing.s)
+                }
+            } content: {
+                ForEach(Array(model.files.enumerated()), id: \.element.id) { index, file in
+                    if index > 0 {
+                        RowDivider(inset: Design.Column.checkbox + Design.Column.icon + 2 * Design.Spacing.m)
+                    }
+                    LargeFileRow(file: file, isSelected: model.selection.contains(file.id)) { model.toggle(file) }
+                        .contextMenu {
+                            Button("Tampilkan di Finder") { model.reveal(file) }
+                            Button("Buka") { model.open(file) }
+                            Divider()
+                            Button("Masukin ke Pengecualian") { exclusions.add([file.url]) }
+                        }
                 }
             }
-            .listStyle(.inset)
-            .scrollContentBackground(.hidden)
-            .contentMargins(.horizontal, Design.Spacing.l, for: .scrollContent)
-
             ActionBar {
                 Text("\(model.selection.count) file dipilih · \(Format.bytes(model.selectedSize))")
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .animation(Design.Motion.quick, value: model.selectedSize)
             } trailing: {
                 Button("Pindahin ke Tong Sampah") { isConfirming = true }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     .disabled(model.selection.isEmpty || model.phase == .removing)
             }
+        }
+    }
+}
+
+/// What the last move to the Trash did, above the list.
+private struct RemovalNotice: View {
+    let removal: RemovalSummary
+
+    var body: some View {
+        if removal.failedCount > 0 {
+            NoticeBanner(
+                tone: .warning, symbol: "exclamationmark.triangle.fill",
+                message: Text(
+                    "\(removal.count) file (\(Format.bytes(removal.bytes))) dipindah ke Tong Sampah, \(removal.failedCount) gagal."
+                ))
+        } else {
+            NoticeBanner(
+                tone: .success, symbol: "checkmark",
+                message: Text("\(removal.count) file (\(Format.bytes(removal.bytes))) udah dipindah ke Tong Sampah."))
         }
     }
 }
@@ -142,8 +157,8 @@ private struct LargeFileRow: View {
     var body: some View {
         HStack(spacing: Design.Spacing.m) {
             SelectionBox(state: isSelected ? .on : .off, action: toggle)
-            FileIcon(url: file.url, size: 24)
-            VStack(alignment: .leading, spacing: 2) {
+            FileIcon(url: file.url)
+            VStack(alignment: .leading, spacing: Design.Spacing.xxs) {
                 Text(file.url.lastPathComponent)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -153,15 +168,16 @@ private struct LargeFileRow: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
             }
-            Spacer()
+            Spacer(minLength: Design.Spacing.m)
             lastUsed
                 .font(.callout)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
             Text(Format.bytes(file.size))
                 .monospacedDigit()
-                .frame(minWidth: 72, alignment: .trailing)
+                .frame(minWidth: Design.Column.size, alignment: .trailing)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Design.Spacing.s)
         .selectableRow(isSelected ? .on : .off, toggle: toggle)
     }
 
@@ -177,12 +193,13 @@ private struct LargeFileRow: View {
 }
 
 extension LargeFilesModel.LastOpened {
+    /// Shown in the toolbar, so it says what the filter keeps.
     var label: LocalizedStringKey {
         switch self {
-        case .any: "Kapan aja"
-        case .threeMonths: "Lebih dari 3 bulan lalu"
-        case .sixMonths: "Lebih dari 6 bulan lalu"
-        case .oneYear: "Lebih dari 1 tahun lalu"
+        case .any: "Dibuka kapan aja"
+        case .threeMonths: "Nggak dibuka 3 bulan"
+        case .sixMonths: "Nggak dibuka 6 bulan"
+        case .oneYear: "Nggak dibuka setahun"
         }
     }
 }
