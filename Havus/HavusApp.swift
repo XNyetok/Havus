@@ -26,6 +26,8 @@ struct HavusApp: App {
 
         Settings {
             SettingsView()
+                .environment(permissions)
+                .environment(updates)
                 .environment(exclusions)
         }
     }
