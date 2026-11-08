@@ -1,5 +1,7 @@
 import AppKit
+import HavusCore
 import SwiftUI
+import os
 
 struct RootView: View {
     @Environment(PermissionCenter.self) private var permissions
@@ -63,6 +65,7 @@ struct RootView: View {
         }
         // Every page scans and removes with the latest list, and drops results the user just excluded.
         .onChange(of: exclusions.list, initial: true) { _, list in
+            Log.app.notice("Exclusion list: \(list.urls.count) items")
             systemJunk.setExclusions(list)
             developerJunk.setExclusions(list)
             uninstaller.setExclusions(list)

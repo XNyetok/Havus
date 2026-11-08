@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 /// The only component in Havus that removes files. Every URL is checked by ``PathGuard`` first.
 public struct FileRemover: Sendable {
@@ -37,12 +38,17 @@ public struct FileRemover: Sendable {
         self.operation = operation
     }
 
-    /// Blocking. Removes `urls` one by one; a failure never stops the rest.
+    /// Blocking. Removes `urls` one by one; a failure never stops the rest. Every refusal and failure is logged, with
+    /// the path as a hash.
     public func remove(_ urls: [URL], method: Method, allowedRoots: [URL]) -> Report {
         var report = Report()
         for url in urls {
             if Task.isCancelled { break }
+            let path = url.path(percentEncoded: false)
             if case .denied(let reason) = pathGuard.check(url, allowedRoots: allowedRoots) {
+                Log.removal.error(
+                    "PathGuard refused \(path, privacy: .private(mask: .hash)): \(String(describing: reason), privacy: .public)"
+                )
                 report.failures.append(Failure(url: url, reason: .blocked(reason)))
                 continue
             }
@@ -50,6 +56,10 @@ public struct FileRemover: Sendable {
                 try operation(url, method)
                 report.removed.append(url)
             } catch {
+                let error = error as NSError
+                Log.removal.error(
+                    "Couldn't remove \(path, privacy: .private(mask: .hash)): \(error.domain, privacy: .public) \(error.code)"
+                )
                 report.failures.append(Failure(url: url, reason: Self.reason(for: error)))
             }
         }

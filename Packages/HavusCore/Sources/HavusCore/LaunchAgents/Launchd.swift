@@ -1,6 +1,7 @@
 import Darwin
 import Foundation
 import ServiceManagement
+import os
 
 /// What launchd and Login Items say about the user's launch agents at one moment.
 public struct LaunchdSnapshot: Sendable, Hashable {
@@ -97,26 +98,32 @@ public struct Launchd: Sendable {
     /// The file stays as it is, so the app that wrote it has no reason to write it again.
     public func turnOff(_ agent: LaunchAgent) throws(Failure) {
         guard let job = agent.job else { return }
-        try check(run(["disable", target(job.label)]))
+        try check(run(["disable", target(job.label)]), of: "disable")
         // Fails when the job isn't loaded, and then there's nothing to stop.
         stop(job.label)
+        Log.launchd.notice("Turned off \(job.label, privacy: .private(mask: .hash))")
     }
 
     /// Blocking. Lets launchd start the job again, and loads it now like at login.
     public func turnOn(_ agent: LaunchAgent) throws(Failure) {
         guard let job = agent.job else { return }
-        try check(run(["enable", target(job.label)]))
+        try check(run(["enable", target(job.label)]), of: "enable")
         // Fails when the job is loaded already, or when launchd won't load it in this session. Either way, it's on and
         // starts at the next login.
         _ = run(["bootstrap", domain, agent.url.path(percentEncoded: false)])
+        Log.launchd.notice("Turned on \(job.label, privacy: .private(mask: .hash))")
     }
 
     /// Blocking. Moves the agent's file to the Trash with `remover`, then stops the job if it's running. Nothing is
     /// stopped when the file stays. Restoring the file from the Trash brings the job back at the next login.
     public func remove(_ agent: LaunchAgent, with remover: FileRemover, allowedRoot: URL) -> FileRemover.Report {
         let report = remover.remove([agent.url], method: .moveToTrash, allowedRoots: [allowedRoot])
-        if report.removed.contains(agent.url), let label = agent.job?.label {
-            stop(label)
+        if report.removed.contains(agent.url) {
+            Log.launchd.notice(
+                "Moved \(agent.url.lastPathComponent, privacy: .private(mask: .hash)) to the Trash")
+            if let label = agent.job?.label {
+                stop(label)
+            }
         }
         return report
     }
@@ -129,12 +136,16 @@ public struct Launchd: Sendable {
         "\(domain)/\(label)"
     }
 
-    private func check(_ result: CommandResult) throws(Failure) {
+    /// What launchctl says can name the job, so the log keeps it private.
+    private func check(_ result: CommandResult, of command: String) throws(Failure) {
         guard result.status != 0 else { return }
         let said = [result.error, result.output]
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .first { !$0.isEmpty }
-        throw Failure(message: said ?? "launchctl exited with status \(result.status)")
+        let message = said ?? "launchctl exited with status \(result.status)"
+        Log.launchd.error(
+            "launchctl \(command, privacy: .public) failed with status \(result.status): \(message, privacy: .private)")
+        throw Failure(message: message)
     }
 
     // MARK: - Reading launchctl

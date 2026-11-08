@@ -1,6 +1,7 @@
 import AppKit
 import HavusCore
 import Observation
+import os
 
 struct RemovalSummary: Equatable {
     let count: Int
@@ -77,6 +78,7 @@ final class LargeFilesModel {
         selection = []
         lastRemoval = nil
         phase = .searching
+        let start = Date.now
 
         task = Task {
             var found = await Background.run { finder.find(criteria, excluding: exclusions) }
@@ -87,6 +89,9 @@ final class LargeFilesModel {
             }
             files = found
             phase = .results
+            Log.scan.notice(
+                "Large files: \(found.count) of \(Log.megabytes(criteria.minimumSize), format: .fixed(precision: 0)) MB or more, in \(Date.now.timeIntervalSince(start), format: .fixed(precision: 1)) s. Media libraries left out: \(skipped != nil ? "yes" : "no", privacy: .public)"
+            )
         }
     }
 
@@ -138,6 +143,8 @@ final class LargeFilesModel {
                 bytes: targets.filter { removed.contains($0.url) }.reduce(0) { $0 + $1.size },
                 failedCount: report.failures.count
             )
+            Log.removal.notice(
+                "Large files: moved \(removed.count) of \(targets.count) to the Trash, \(report.failures.count) failed")
             phase = .results
         }
     }

@@ -1,6 +1,7 @@
 import AppKit
 import HavusCore
 import Observation
+import os
 
 /// Helps the user report a problem: offers a new crash report once, at launch, and answers "Laporkan Masalah…".
 ///
@@ -48,6 +49,7 @@ final class ProblemReportCenter {
         let since = defaults.object(forKey: Key.lastOffered) as? Date
         Task {
             guard let newest = await crashReports(since: since).first else { return }
+            Log.reports.notice("Offered crash report \(newest.url.lastPathComponent, privacy: .public)")
             defaults.set(newest.date, forKey: Key.lastOffered)
             prompt = .crash(newest)
         }
@@ -62,6 +64,9 @@ final class ProblemReportCenter {
     }
 
     func send(_ prompt: Prompt, via channel: Channel) {
+        Log.reports.notice(
+            "Opened a problem report \(channel == .gitHub ? "on GitHub" : "by email", privacy: .public), crash report attached: \(prompt.crashReport != nil ? "yes" : "no", privacy: .public)"
+        )
         Task {
             if let report = prompt.crashReport, let copy = await shareableCopy(of: report) {
                 NSWorkspace.shared.activateFileViewerSelecting([copy])
@@ -95,7 +100,7 @@ final class ProblemReportCenter {
         case .gitHub:
             return ProblemReport.issueURL(
                 title: isCrash ? String(localized: "Havus berhenti mendadak") : nil,
-                version: appVersion,
+                version: Bundle.main.versionAndBuild,
                 macOS: MacInfo.osVersion,
                 whatHappened: isCrash ? String(localized: "Havus berhenti mendadak. Ini laporan crash-nya:") : nil)
         case .email:
@@ -110,18 +115,10 @@ final class ProblemReportCenter {
         }
     }
 
-    /// Such as `0.4.0 (12)`: the build number tells a release apart from a build of the same version made elsewhere.
-    private var appVersion: String? {
-        let info = Bundle.main.infoDictionary
-        guard let version = info?["CFBundleShortVersionString"] as? String else { return nil }
-        guard let build = info?["CFBundleVersion"] as? String else { return version }
-        return "\(version) (\(build))"
-    }
-
     /// What the bug report form asks for, on one line of the email.
     private var macDetails: String {
         [
-            appVersion.map { "Havus \($0)" },
+            Bundle.main.versionAndBuild.map { "Havus \($0)" },
             MacInfo.osVersion,
             MacInfo.isAppleSilicon ? "Apple silicon" : "Intel",
             FullDiskAccess.isGranted()

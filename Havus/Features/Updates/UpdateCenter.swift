@@ -1,6 +1,7 @@
 import AppKit
 import HavusCore
 import Observation
+import os
 
 /// Lets the user know when a newer Havus is out. Havus can't install it by itself, so it links to the release on the
 /// changelog at havus.web.id, in the language Havus runs in. The page also has the download and the update steps.
@@ -94,12 +95,18 @@ final class UpdateCenter {
             defer { isChecking = false }
             do {
                 let latest = try await UpdateCheck.latestVersion()
+                Log.updates.notice("Update check: the latest release is \(latest.description, privacy: .public)")
                 latestVersion = latest
                 defaults.set(latest.description, forKey: Key.latestVersion)
                 if manual {
                     manualResult = availableUpdate.map(CheckResult.available) ?? .upToDate
                 }
             } catch {
+                // GitHub's status code for its own failures, the domain and code of a network error otherwise.
+                let reason =
+                    (error as? UpdateCheck.Failure).map { String(describing: $0) }
+                    ?? "\((error as NSError).domain) \((error as NSError).code)"
+                Log.updates.error("Update check failed: \(reason, privacy: .public)")
                 if manual {
                     manualResult = .failed
                 }

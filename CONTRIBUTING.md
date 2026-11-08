@@ -67,6 +67,7 @@ Rules live in [`JunkRule+Catalog.swift`](Packages/HavusCore/Sources/HavusCore/Ju
 - Format with the `swift-format` that ships with Xcode: `make format` before committing, `make lint` to check.
 - Swift 6 strict concurrency: UI and models are `@MainActor`; heavy work (disk scans) runs in background tasks.
 - New logic goes into `HavusCore`, with tests. Tests use a temporary home folder and never touch the real one.
+- Log what Havus decides and why with `Log`, at `notice` level or above, with paths and names as `.private(mask: .hash)`. See [Logging](docs/architecture.md#logging).
 
 ## UI copy (Indonesian and English)
 
