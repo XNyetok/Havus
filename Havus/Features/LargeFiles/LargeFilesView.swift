@@ -1,9 +1,9 @@
 import HavusCore
+import QuickLook
 import SwiftUI
 
 struct LargeFilesView: View {
     @Bindable var model: LargeFilesModel
-    @Environment(ExclusionStore.self) private var exclusions
     @State private var isConfirming = false
 
     var body: some View {
@@ -90,30 +90,7 @@ struct LargeFilesView: View {
 
     private var results: some View {
         VStack(spacing: 0) {
-            RowList {
-                SummaryHeader {
-                    RollingSize(bytes: model.totalSize)
-                } caption: {
-                    Text("di \(model.files.count) file")
-                } notes: {
-                    if let removal = model.lastRemoval {
-                        RemovalNotice(removal: removal)
-                    }
-                }
-            } content: {
-                ForEach(Array(model.files.enumerated()), id: \.element.id) { index, file in
-                    if index > 0 {
-                        RowDivider(inset: Design.Column.checkbox + Design.Column.icon + 2 * Design.Spacing.m)
-                    }
-                    LargeFileRow(file: file, isSelected: model.selection.contains(file.id)) { model.toggle(file) }
-                        .contextMenu {
-                            Button("Tampilkan di Finder") { model.reveal(file) }
-                            Button("Buka") { model.open(file) }
-                            Divider()
-                            Button("Masukin ke Pengecualian") { exclusions.add([file.url]) }
-                        }
-                }
-            }
+            LargeFileList(model: model)
             ActionBar {
                 Text("\(model.selection.count) file dipilih · \(Format.bytes(model.selectedSize))")
                     .foregroundStyle(.secondary)
@@ -127,6 +104,94 @@ struct LargeFilesView: View {
                     .disabled(model.selection.isEmpty || model.phase == .removing)
             }
         }
+    }
+}
+
+/// The files found, with Quick Look: a click picks a row, Space shows the file, and the arrow keys move to the next
+/// one, like in Finder. The checkbox stays the only way to pick files for the Trash.
+private struct LargeFileList: View {
+    let model: LargeFilesModel
+    @Environment(ExclusionStore.self) private var exclusions
+    /// The row a click or the arrow keys picked, which Space shows.
+    @State private var highlighted: LargeFile.ID?
+    /// The file Quick Look shows, if it's open.
+    @State private var previewURL: URL?
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            RowList {
+                SummaryHeader {
+                    RollingSize(bytes: model.totalSize)
+                } caption: {
+                    Text("di \(model.files.count) file")
+                } notes: {
+                    if let removal = model.lastRemoval {
+                        RemovalNotice(removal: removal)
+                    }
+                    Label("Klik sebuah file, lalu tekan Spasi buat lihat isinya.", systemImage: "eye")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+            } content: {
+                ForEach(Array(model.files.enumerated()), id: \.element.id) { index, file in
+                    if index > 0 {
+                        RowDivider(inset: Design.Column.checkbox + Design.Column.icon + 2 * Design.Spacing.m)
+                    }
+                    LargeFileRow(file: file, isSelected: model.selection.contains(file.id)) { model.toggle(file) }
+                        .rowHighlight(highlighted == file.id)
+                        .onTapGesture {
+                            highlighted = file.id
+                            isFocused = true
+                        }
+                        .accessibilityAction(named: "Lihat Sekilas") { preview(file) }
+                        .contextMenu {
+                            Button("Lihat Sekilas") { preview(file) }
+                            Button("Tampilkan di Finder") { model.reveal(file) }
+                            Button("Buka") { model.open(file) }
+                            Divider()
+                            Button("Masukin ke Pengecualian") { exclusions.add([file.url]) }
+                        }
+                        .id(file.id)
+                }
+            }
+            .focusable()
+            .focused($isFocused)
+            .focusEffectDisabled()
+            .onKeyPress(.space) {
+                guard let file = highlightedFile ?? model.files.first else { return .ignored }
+                preview(file)
+                return .handled
+            }
+            .onKeyPress(.downArrow) { move(by: 1, proxy: proxy) }
+            .onKeyPress(.upArrow) { move(by: -1, proxy: proxy) }
+        }
+        .quickLookPreview($previewURL, in: model.files.map(\.url))
+        // Quick Look's own arrow keys go through the list too, and the highlight follows.
+        .onChange(of: previewURL) { _, url in
+            if let url, let file = model.files.first(where: { $0.url == url }) {
+                highlighted = file.id
+            }
+        }
+    }
+
+    private var highlightedFile: LargeFile? {
+        model.files.first { $0.id == highlighted }
+    }
+
+    private func preview(_ file: LargeFile) {
+        highlighted = file.id
+        previewURL = file.url
+    }
+
+    private func move(by offset: Int, proxy: ScrollViewProxy) -> KeyPress.Result {
+        guard !model.files.isEmpty else { return .ignored }
+        let current = model.files.firstIndex { $0.id == highlighted }
+        let next = current.map { min(max($0 + offset, 0), model.files.count - 1) } ?? 0
+        let id = model.files[next].id
+        highlighted = id
+        withAnimation(Design.Motion.quick) { proxy.scrollTo(id) }
+        return .handled
     }
 }
 
