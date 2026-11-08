@@ -5,7 +5,7 @@
 ```
 ┌─────────────── Havus.app (SwiftUI, @MainActor) ───────────────┐
 │  RootView (NavigationSplitView)                               │
-│   ├─ Ringkasan          DiskSpace, FullDiskAccess             │
+│   ├─ Ringkasan          DiskSpace, every page model's state   │
 │   ├─ Sampah Sistem      JunkCleanerModel(group: .system)      │
 │   ├─ Sampah Developer   JunkCleanerModel(group: .developer)   │
 │   ├─ Hapus Aplikasi     UninstallerModel                      │

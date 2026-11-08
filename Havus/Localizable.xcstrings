@@ -75,6 +75,16 @@
         }
       }
     },
+    "%@ bisa dibersihin" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ can be cleaned up"
+          }
+        }
+      }
+    },
     "%@ dan %lld file sisanya udah dipindah ke Tong Sampah (%@)." : {
       "localizations" : {
         "en" : {
@@ -135,6 +145,26 @@
         }
       }
     },
+    "%@ di folder home" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ in your home folder"
+          }
+        }
+      }
+    },
+    "%@ ketemu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ found"
+          }
+        }
+      }
+    },
     "%@ kosong" : {
       "localizations" : {
         "en" : {
@@ -191,6 +221,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ moved to the Trash. Empty the Trash to actually free up the space."
+          }
+        }
+      }
+    },
+    "%lld aplikasi" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld app"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld apps"
+                }
+              }
+            }
           }
         }
       }
@@ -601,6 +653,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "That didn't work"
+          }
+        }
+      }
+    },
+    "Belum dipindai" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not scanned yet"
           }
         }
       }
@@ -1844,6 +1906,16 @@
         }
       }
     },
+    "Lagi dipindai…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scanning…"
+          }
+        }
+      }
+    },
     "Lagi jalan" : {
       "localizations" : {
         "en" : {
@@ -2472,6 +2544,16 @@
         }
       }
     },
+    "Pindai Semua" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan All"
+          }
+        }
+      }
+    },
     "Pindai Ulang" : {
       "localizations" : {
         "en" : {
@@ -2598,6 +2680,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "System Junk"
+          }
+        }
+      }
+    },
+    "Sampah sistem dan developer sekaligus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System and developer junk in one go"
           }
         }
       }
@@ -3006,6 +3098,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "macOS wouldn't move %@. Try turning on Havus in **Privacy & Security → App Management**, or remove it yourself in Finder."
+          }
+        }
+      }
+    },
+    "terpakai" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "used"
           }
         }
       }

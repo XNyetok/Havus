@@ -69,7 +69,11 @@ struct RootView: View {
     private var detail: some View {
         switch selection {
         case .overview:
-            OverviewView { selection = $0 }
+            OverviewView(
+                tools: OverviewTools(
+                    systemJunk: systemJunk, developerJunk: developerJunk, uninstaller: uninstaller,
+                    largeFiles: largeFiles, diskUsage: diskUsage, startupItems: startupItems)
+            ) { selection = $0 }
         case .systemJunk:
             JunkCleanerView(model: systemJunk, page: .systemJunk)
         case .developerJunk:
