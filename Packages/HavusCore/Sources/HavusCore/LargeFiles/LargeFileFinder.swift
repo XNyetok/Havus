@@ -1,5 +1,6 @@
 import CoreServices
 import Foundation
+import os
 
 public struct LargeFile: Sendable, Hashable, Identifiable {
     public let url: URL
@@ -47,6 +48,9 @@ public struct LargeFileFinder: Sendable {
     public func find(_ criteria: Criteria, excluding exclusions: ExclusionList = ExclusionList()) -> [LargeFile] {
         var candidates = usesSpotlight ? spotlightCandidates(minimumSize: criteria.minimumSize) : []
         if candidates.isEmpty {
+            if usesSpotlight {
+                Log.scan.notice("Spotlight found no large files, so the usual folders are scanned instead")
+            }
             candidates = fileSystemCandidates(minimumSize: criteria.minimumSize)
         }
 

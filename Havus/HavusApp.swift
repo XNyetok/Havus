@@ -1,4 +1,6 @@
+import HavusCore
 import SwiftUI
+import os
 
 @main
 struct HavusApp: App {
@@ -52,6 +54,13 @@ struct AboutCommands: Commands {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// The first line of each session in the log, with what a problem report would ask for.
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        Log.app.notice(
+            "Havus \(Bundle.main.versionAndBuild ?? "?", privacy: .public) started on \(MacInfo.osVersion, privacy: .public), \(MacInfo.isAppleSilicon ? "Apple silicon" : "Intel", privacy: .public), Full Disk Access \(FullDiskAccess.isGranted() ? "on" : "off", privacy: .public)"
+        )
+    }
+
     /// Havus is a single-window utility: closing the window quits the app.
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true

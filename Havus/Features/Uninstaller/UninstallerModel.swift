@@ -1,6 +1,7 @@
 import AppKit
 import HavusCore
 import Observation
+import os
 
 struct UninstallOutcome: Equatable {
     let appName: String
@@ -71,6 +72,7 @@ final class UninstallerModel {
 
         appsTask = Task {
             let found = await Task.detached(priority: .userInitiated) { catalog.installedApps() }.value
+            Log.scan.notice("Uninstaller: \(found.count) apps")
             apps = found
             isLoadingApps = false
             if let app = appToShow {
@@ -148,6 +150,9 @@ final class UninstallerModel {
             // Name-based matches need a human look, so they start unselected.
             leftoverSelection = Set(found.filter { $0.match == .bundleIdentifier }.map(\.id))
             isLoadingLeftovers = false
+            Log.scan.notice(
+                "Uninstaller: \(found.count) leftovers of \(app.bundleIdentifier, privacy: .private(mask: .hash)), \(self.leftoverSelection.count) by bundle identifier"
+            )
         }
     }
 
@@ -215,6 +220,9 @@ final class UninstallerModel {
 
             let removedApp = !appReport.removed.isEmpty
             let removedLeftoverURLs = Set(leftoverReport.removed)
+            Log.removal.notice(
+                "Uninstaller: \(app.bundleIdentifier, privacy: .private(mask: .hash)): app moved to the Trash: \(removedApp ? "yes" : appTargets.isEmpty ? "not chosen" : "no", privacy: .public), leftovers moved: \(removedLeftoverURLs.count) of \(leftoverTargets.count), \(appReport.failures.count + leftoverReport.failures.count) failed"
+            )
             let leftoverBytes = leftoverTargets.filter { removedLeftoverURLs.contains($0.url) }.reduce(0) {
                 $0 + $1.size
             }

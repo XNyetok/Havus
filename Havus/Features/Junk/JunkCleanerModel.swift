@@ -1,6 +1,7 @@
 import AppKit
 import HavusCore
 import Observation
+import os
 
 struct CleanupSummary: Equatable, Sendable {
     var trashedBytes: Int64 = 0
@@ -100,6 +101,7 @@ final class JunkCleanerModel {
         results = []
         selection = []
         phase = .scanning(finished: 0, total: rules.count)
+        let start = Date.now
 
         task = Task {
             await withTaskGroup(of: JunkScanResult.self) { group in
@@ -123,7 +125,16 @@ final class JunkCleanerModel {
             guard !Task.isCancelled else { return }
             results.sort { $0.totalSize > $1.totalSize }
             phase = .results
+            logScan(since: start)
         }
+    }
+
+    private func logScan(since start: Date) {
+        let itemCount = results.reduce(0) { $0 + $1.items.count }
+        let unreadable = results.filter { $0.status == .noPermission }.map(\.rule.id.rawValue)
+        Log.scan.notice(
+            "\(self.group.rawValue, privacy: .public) junk: \(itemCount) items, \(Log.megabytes(self.totalSize), format: .fixed(precision: 1)) MB, from \(self.results.count) rules in \(Date.now.timeIntervalSince(start), format: .fixed(precision: 1)) s. No permission for: \(unreadable.isEmpty ? "none" : unreadable.joined(separator: ", "), privacy: .public)"
+        )
     }
 
     func cancel() {
@@ -148,6 +159,9 @@ final class JunkCleanerModel {
             let summary = await Task.detached(priority: .userInitiated) {
                 JunkCleanerModel.remove(items, rules: rules, home: home, exclusions: exclusions)
             }.value
+            Log.removal.notice(
+                "\(self.group.rawValue, privacy: .public) junk: cleaned \(items.count) items, \(Log.megabytes(summary.trashedBytes), format: .fixed(precision: 1)) MB to the Trash, \(Log.megabytes(summary.deletedBytes), format: .fixed(precision: 1)) MB deleted, \(summary.failedCount) removals failed"
+            )
             results = []
             selection = []
             phase = .finished(summary)
@@ -167,6 +181,13 @@ final class JunkCleanerModel {
                 return JunkCleanerModel.remove(
                     result.items, rules: [rule.id: rule], home: scanner.home, exclusions: exclusions)
             }.value
+            if summary.trashNeedsPermission {
+                Log.removal.notice("Couldn't empty the Trash: it needs Full Disk Access")
+            } else {
+                Log.removal.notice(
+                    "Emptied the Trash: \(Log.megabytes(summary.deletedBytes), format: .fixed(precision: 1)) MB deleted, \(summary.failedCount) removals failed"
+                )
+            }
             phase = .finished(summary)
         }
     }

@@ -1,6 +1,7 @@
 import AppKit
 import HavusCore
 import Observation
+import os
 
 /// State for "Peta Disk": where the space in the home folder goes. Read-only: nothing here removes anything.
 @MainActor
@@ -57,11 +58,15 @@ final class DiskUsageModel {
                 self.progress = progress
             }
         }
+        let start = Date.now
         task = Task {
             let root = await Background.run { scanner.scan(home, progress: report) }
             guard !Task.isCancelled else { return }
             path = [root]
             phase = .results
+            Log.scan.notice(
+                "Disk map: \(Log.megabytes(root.bytes), format: .fixed(precision: 1)) MB in the home folder, in \(Date.now.timeIntervalSince(start), format: .fixed(precision: 1)) s. Everything readable: \(root.isComplete ? "yes" : "no", privacy: .public)"
+            )
         }
     }
 

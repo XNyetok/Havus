@@ -1,6 +1,7 @@
 import AppKit
 import HavusCore
 import Observation
+import os
 
 /// Tracks the macOS privacy permissions Havus depends on.
 @MainActor
@@ -9,7 +10,11 @@ final class PermissionCenter {
     private(set) var hasFullDiskAccess = FullDiskAccess.isGranted()
 
     func refresh() {
-        hasFullDiskAccess = FullDiskAccess.isGranted()
+        let isGranted = FullDiskAccess.isGranted()
+        if isGranted != hasFullDiskAccess {
+            Log.app.notice("Full Disk Access is \(isGranted ? "on" : "off", privacy: .public) now")
+        }
+        hasFullDiskAccess = isGranted
     }
 
     func openFullDiskAccessSettings() {

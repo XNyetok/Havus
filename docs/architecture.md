@@ -111,6 +111,19 @@ The only network access in Havus. It tells the user about a new version; it neve
 - **Only the tag is read.** The tag must look like `vX.Y.Z`; the release notes and assets are ignored. The answer can't change anything in the app except the version number shown, and the link always goes to the release on the changelog at havus.web.id, in the language Havus runs in: `https://havus.web.id/en/changelog/#vX.Y.Z` in English, `https://havus.web.id/changelog/#vX.Y.Z` otherwise. The website builds that page from the same GitHub releases.
 - **Failures stay quiet.** When an automatic check fails, Havus tries again the next day. A check started from the menu shows an alert that it couldn't connect.
 
+## Logging
+
+Havus writes to the unified log under the subsystem `id.nyetok.havus` (`Log` in HavusCore), so a problem on a user's Mac can be traced afterwards. The log stays on the Mac, like every other app's.
+
+- **What Havus did, and why.** Each session starts with the Havus and macOS versions and whether Full Disk Access is on. Scans and cleanups log a line each with what they found or removed and how long they took. `FileRemover` logs every refusal with `PathGuard`'s reason and every failed removal with its error code, and `Launchd` logs what launchctl answered. Categories: `app`, `scan`, `removal`, `launchd`, `updates` and `reports`.
+- **Private by default.** Paths and the names of the user's apps and launch agents are logged as `.private(mask: .hash)`. The log shows a hash, the same for the same value, so the lines about one file can be matched up without revealing it. Counts, sizes, durations, rule IDs, reasons and error codes are public.
+- **`notice` or above.** macOS keeps those on disk for a few days. It keeps `info` lines only in memory unless an error follows, and `debug` lines not at all.
+- **Reading it.** Filter Console on the subsystem, or run the command below. In zsh, a bare `log` is a shell builtin, hence the full path.
+
+  ```sh
+  /usr/bin/log show --last 1h --info --predicate 'subsystem == "id.nyetok.havus"'
+  ```
+
 ## Crash reports
 
 Apple passes crash reports on only to developers of App Store apps, so Havus helps the user send one. It never sends anything itself, and goes online for nothing new.
