@@ -547,12 +547,12 @@
         }
       }
     },
-    "(Lampirin laporan crash yang Havus tunjukin di Finder.)" : {
+    "(Lampirin file yang Havus tunjukin di Finder.)" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(Attach the crash report that Havus showed in Finder.)"
+            "value" : "(Attach the files that Havus showed in Finder.)"
           }
         }
       }
@@ -1299,22 +1299,22 @@
         }
       }
     },
-    "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub." : {
+    "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub. Havus juga nunjukin catatan aktivitasnya di Finder, biar bisa kamu lampirin." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Describe what happened on GitHub, or by email if you don't have a GitHub account."
+            "value" : "Describe what happened on GitHub, or by email if you don't have a GitHub account. Havus also shows its activity log in Finder, so you can attach it."
           }
         }
       }
     },
-    "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub. Havus juga nunjukin laporan crash terakhirnya di Finder, biar bisa kamu lampirin." : {
+    "Ceritain apa yang terjadi lewat GitHub, atau lewat email kalau kamu nggak punya akun GitHub. Havus juga nunjukin laporan crash terakhir dan catatan aktivitasnya di Finder, biar bisa kamu lampirin." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Describe what happened on GitHub, or by email if you don't have a GitHub account. Havus also shows its latest crash report in Finder, so you can attach it."
+            "value" : "Describe what happened on GitHub, or by email if you don't have a GitHub account. Havus also shows its latest crash report and activity log in Finder, so you can attach them."
           }
         }
       }
@@ -3828,12 +3828,12 @@
         }
       }
     },
-    "macOS nyimpen laporan crash-nya di Mac kamu. Isinya info teknis soal Havus dan macOS, bukan isi file kamu. Kalau kamu kirim, bug-nya bisa lebih cepat dibenerin. Havus nunjukin filenya di Finder, kamu tinggal lampirin." : {
+    "macOS nyimpen laporan crash-nya di Mac kamu. Isinya info teknis soal Havus dan macOS, bukan isi file kamu. Kalau kamu kirim, bug-nya bisa lebih cepat dibenerin. Havus nunjukin laporan itu dan catatan aktivitasnya di Finder, kamu tinggal lampirin." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "macOS saved a crash report on your Mac. It has technical details about Havus and macOS, not what's in your files. Sending it helps get the bug fixed sooner. Havus shows the file in Finder, so you can attach it."
+            "value" : "macOS saved a crash report on your Mac. It has technical details about Havus and macOS, not what's in your files. Sending it helps get the bug fixed sooner. Havus shows it in Finder with its activity log, so you can attach them."
           }
         }
       }
