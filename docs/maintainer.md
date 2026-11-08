@@ -73,22 +73,6 @@ Force-push only to a pull request branch; the ruleset blocks it on `main`. When 
 
 Publishing is what reaches users: Havus's update check reads GitHub's *latest* release, so users who turned the check on hear about it within a day. Drafts and prereleases never show up. Keep tags in the `vX.Y.Z` form, because the app ignores any other tag and links to the release by it (`havus.web.id/changelog/#vX.Y.Z`, or `/en/changelog/#vX.Y.Z` when Havus runs in English).
 
-## Reading a crash report
-
-When Havus crashes, macOS writes a report to `~/Library/Logs/DiagnosticReports/` on the user's Mac, named like `Havus-2026-11-08-201402.ips`, and later moves it into the `Retired` folder there. Apple passes crash reports on only to developers of App Store and TestFlight apps, so a report reaches you only when the user sends it.
-
-Release builds are stripped, so the report shows Havus's own code only as offsets into the binary. Every release after 0.3.0 comes with `Havus.app.dSYM.zip`, the debug symbols that turn those offsets into function names and line numbers. A dSYM fits only the build it came from, because the report names the binary by its UUID, and `scripts/build-release.sh` checks that the two match. 0.3.0 and earlier have no dSYM.
-
-The report's first line has the version (`"app_version"`). Download that release's dSYM, symbolicate the report with the script that comes with Xcode, and open the result in Console:
-
-```sh
-gh release download vX.Y.Z --repo XNyetok/Havus --pattern Havus.app.dSYM.zip --dir /tmp/havus-X.Y.Z
-ditto -x -k /tmp/havus-X.Y.Z/Havus.app.dSYM.zip /tmp/havus-X.Y.Z
-python3 "$(xcode-select -p)/../SharedFrameworks/CoreSymbolicationDT.framework/Versions/A/Resources/CrashSymbolicator.py" \
-  -d /tmp/havus-X.Y.Z/Havus.app.dSYM -o Havus-symbolicated.ips Havus-2026-11-08-201402.ips
-open -a Console Havus-symbolicated.ips
-```
-
 The app version comes from the tag name, so there's no need to edit `MARKETING_VERSION` by hand. To try it locally first, run `make release VERSION=X.Y.Z`; the output lands in `build/release/`. A local build is ad-hoc signed unless you import the certificate, as described below.
 
 ## Release signing certificate
@@ -165,6 +149,22 @@ Do this once there's an Apple Developer Program membership ($99/year).
 4. Submit the app to Homebrew Cask. Optionally add Sparkle for auto-updates with an EdDSA-signed appcast.
 
 After this, macOS no longer blocks the first launch. Moving from the self-signed certificate to a Developer ID changes the designated requirement once, so users turn Full Disk Access on one more time; say so in those release notes.
+
+## Reading a crash report
+
+When Havus crashes, macOS writes a report to `~/Library/Logs/DiagnosticReports/` on the user's Mac, named like `Havus-2026-11-08-201402.ips`, and later moves it into the `Retired` folder there. Apple passes crash reports on only to developers of App Store and TestFlight apps, so a report reaches you only when the user sends it.
+
+Release builds are stripped, so the report shows Havus's own code only as offsets into the binary. Every release after 0.3.0 comes with `Havus.app.dSYM.zip`, the debug symbols that turn those offsets into function names and line numbers. A dSYM fits only the build it came from, because the report names the binary by its UUID, and `scripts/build-release.sh` checks that the two match. 0.3.0 and earlier have no dSYM.
+
+The report's first line has the version (`"app_version"`). Download that release's dSYM, symbolicate the report with the script that comes with Xcode, and open the result in Console:
+
+```sh
+gh release download vX.Y.Z --repo XNyetok/Havus --pattern Havus.app.dSYM.zip --dir /tmp/havus-X.Y.Z
+ditto -x -k /tmp/havus-X.Y.Z/Havus.app.dSYM.zip /tmp/havus-X.Y.Z
+python3 "$(xcode-select -p)/../SharedFrameworks/CoreSymbolicationDT.framework/Versions/A/Resources/CrashSymbolicator.py" \
+  -d /tmp/havus-X.Y.Z/Havus.app.dSYM -o Havus-symbolicated.ips Havus-2026-11-08-201402.ips
+open -a Console Havus-symbolicated.ips
+```
 
 ## Routine
 
