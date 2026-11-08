@@ -8,8 +8,11 @@ struct UninstallerView: View {
 
     var body: some View {
         HSplitView {
+            // HSplitView opens the list at its minimum width, and the divider runs up through the toolbar, so the
+            // minimum is what keeps the page's subtitle there clear of it ("Remove apps together with their leftover
+            // files" takes 259 points).
             appList
-                .frame(minWidth: 240, idealWidth: 270, maxWidth: 360)
+                .frame(minWidth: 270, idealWidth: 270, maxWidth: 360)
             detail
                 .frame(minWidth: 380, maxWidth: .infinity, maxHeight: .infinity)
         }
