@@ -18,7 +18,7 @@ The app speaks casual Indonesian and English, following your Mac's language. [Ri
 | **System junk** (*Sampah Sistem*) | App caches and logs, Mail attachments you opened, iPhone/iPad update files, Trash contents |
 | **Developer junk** (*Sampah Developer*) | Xcode (DerivedData, Archives, Device Support, Previews), Simulator caches, Homebrew, npm, Yarn, pnpm, CocoaPods, SwiftPM, pip, Go, Gradle, Bun, Cargo |
 | **Uninstaller** (*Hapus Aplikasi*) | Removes an app together with its leftovers, or only the leftovers to "reset" it |
-| **Large & old files** (*File Gede & Lama*) | Finds big, rarely opened files using the Spotlight index, so it's fast |
+| **Large & old files** (*File Gede & Lama*) | Finds big, rarely opened files using the Spotlight index, so it's fast. Press Space to look inside one with Quick Look |
 | **Disk map** (*Peta Disk*) | Shows which folders in your home folder take up the most space, biggest first. Click a folder to look inside. It only looks: nothing is removed here |
 | **Startup items** (*Jalan Otomatis*) | Lists the launch agents in your Library with the app each belongs to. Turn one off, or move it to the Trash |
 

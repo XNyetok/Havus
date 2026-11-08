@@ -2036,6 +2036,16 @@
         }
       }
     },
+    "Klik sebuah file, lalu tekan Spasi buat lihat isinya." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click a file, then press Space to see what's in it."
+          }
+        }
+      }
+    },
     "Kode sumber" : {
       "localizations" : {
         "en" : {
@@ -2268,6 +2278,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "On GitHub Issues"
+          }
+        }
+      }
+    },
+    "Lihat Sekilas" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick Look"
           }
         }
       }
