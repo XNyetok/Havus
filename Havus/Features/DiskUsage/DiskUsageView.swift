@@ -5,14 +5,38 @@ import SwiftUI
 /// folder on screen. Click a folder to see inside it. Read-only.
 struct DiskUsageView: View {
     let model: DiskUsageModel
-    @Environment(PermissionCenter.self) private var permissions
 
     var body: some View {
-        VStack(spacing: 0) {
-            PageHeader(item: .diskUsage)
-                .padding([.horizontal, .top], Design.Spacing.xxl)
-                .padding(.bottom, Design.Spacing.l)
+        PhaseContent(key: stateKey) {
             content
+        }
+        .toolbar {
+            if model.phase == .results {
+                ToolbarItem(placement: .navigation) {
+                    Button {
+                        model.goUp()
+                    } label: {
+                        Label("Balik", systemImage: "chevron.left")
+                    }
+                    .keyboardShortcut(.upArrow, modifiers: .command)
+                    .help("Balik ke folder di atasnya")
+                    .disabled(model.path.count < 2)
+                }
+            }
+            if model.phase != .idle {
+                ToolbarItem(placement: .primaryAction) {
+                    RescanButton { model.scan() }
+                        .disabled(model.phase == .scanning)
+                }
+            }
+        }
+    }
+
+    private var stateKey: String {
+        switch model.phase {
+        case .idle: "idle"
+        case .scanning: "scanning"
+        case .results: "results"
         }
     }
 
@@ -20,29 +44,25 @@ struct DiskUsageView: View {
     private var content: some View {
         switch model.phase {
         case .idle:
-            MessageView(
+            EmptyState(
                 symbol: SidebarItem.diskUsage.symbol,
-                title: "Lihat ke mana ruang disk kamu",
+                title: Text("Lihat ke mana ruang disk kamu"),
                 message: Text(
                     "Havus ngitung ukuran tiap folder di folder home kamu, termasuk yang tersembunyi. Cuma dilihat, nggak ada yang dihapus."
-                ),
-                actionTitle: "Pindai Sekarang"
-            ) { model.scan() }
+                )
+            ) {
+                Button("Pindai Sekarang") { model.scan() }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+            }
 
         case .scanning:
-            VStack(spacing: Design.Spacing.m) {
-                ProgressView()
-                Text("Lagi ngitung ukuran folder…")
-                    .foregroundStyle(.secondary)
-                if let progress = model.progress {
-                    Text("\(Format.bytes(progress.bytes)) udah dihitung")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                }
-                Button("Batal") { model.cancel() }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            ScanProgress(
+                symbol: SidebarItem.diskUsage.symbol,
+                title: Text("Lagi ngitung ukuran folder…"),
+                detail: model.progress.map { Text("\(Format.bytes($0.bytes)) udah dihitung") },
+                cancel: { model.cancel() }
+            )
 
         case .results:
             if let folder = model.current {
@@ -55,53 +75,24 @@ struct DiskUsageView: View {
     // measured with its text squeezed narrow, where such a text grows hundreds of points tall. The window doesn't grow
     // along, so the whole page, sidebar included, gets laid out taller than the window and is cut off at both ends.
     private func results(_ folder: DiskUsageItem) -> some View {
-        VStack(spacing: 0) {
-            List {
-                Section {
-                    if !folder.isComplete, !permissions.hasFullDiskAccess {
-                        unreadableNotice
-                    }
-                    contents(of: folder)
-                } header: {
-                    // In the list, so its columns line up with the rows below, with or without a scroll bar.
-                    FolderHeader(model: model, folder: folder)
-                        .padding(.bottom, Design.Spacing.s)
-                }
-            }
-            .listStyle(.inset)
-            .scrollContentBackground(.hidden)
-            .contentMargins(.horizontal, Design.Spacing.l, for: .scrollContent)
-            // A new folder starts at the top of the list.
-            .id(folder.id)
-
-            ActionBar {
+        ZStack {
+            RowList {
+                FolderSummary(folder: folder, path: model.path) { model.goBack(to: $0) }
+            } content: {
+                contents(of: folder)
                 Text(
-                    "Di sini nggak ada yang dihapus. Buat bersihin, pakai **Sampah Sistem**, **Sampah Developer**, atau **File Gede & Lama**."
+                    "Di sini cuma dilihat, nggak ada yang dihapus. Buat bersihin, pakai **Sampah Sistem**, **Sampah Developer**, atau **File Gede & Lama**."
                 )
+                .font(.callout)
                 .foregroundStyle(.secondary)
-            } trailing: {
-                Button("Pindai Ulang") { model.scan() }
+                .frame(maxWidth: Design.paragraphWidth, alignment: .leading)
+                .padding(.top, Design.Spacing.l)
             }
+            // A new folder starts at the top of the list, and fades in.
+            .id(folder.id)
+            .transition(.opacity)
         }
-    }
-
-    /// While the folder on screen has parts macOS keeps closed without Full Disk Access, so its size is too low. A row
-    /// in the list, so it scrolls away with it and can't push the page out of the window.
-    private var unreadableNotice: some View {
-        HStack(spacing: Design.Spacing.m) {
-            Image(systemName: "lock.fill")
-                .foregroundStyle(.orange)
-                .accessibilityHidden(true)
-            Text(
-                "Sebagian isi folder ini nggak bisa dibaca Havus, jadi ukurannya belum lengkap. Nyalain Akses Disk Penuh, terus pindai ulang."
-            )
-            .fixedSize(horizontal: false, vertical: true)
-            Spacer(minLength: Design.Spacing.m)
-            Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
-        }
-        .card(padding: Design.Spacing.m)
-        .padding(.bottom, Design.Spacing.s)
-        .listRowSeparator(.hidden)
+        .animation(Design.Motion.quick, value: folder.id)
     }
 
     @ViewBuilder
@@ -116,11 +107,16 @@ struct DiskUsageView: View {
                 }
             }
             .foregroundStyle(.secondary)
+            .padding(.vertical, Design.Spacing.m)
         } else {
-            ForEach(children) { item in
+            ForEach(Array(children.enumerated()), id: \.element.id) { index, item in
+                if index > 0 {
+                    RowDivider(inset: Design.Column.icon + Design.Spacing.m)
+                }
                 row(item, share: share(item.bytes, of: folder))
             }
             if folder.otherItems.count > 0 {
+                RowDivider(inset: Design.Column.icon + Design.Spacing.m)
                 OtherItemsRow(other: folder.otherItems, share: share(folder.otherItems.bytes, of: folder))
             }
         }
@@ -140,6 +136,7 @@ struct DiskUsageView: View {
                     row
                 }
                 .buttonStyle(.plain)
+                .rowHighlight()
                 .accessibilityLabel(spokenName(of: item, isExcluded: isExcluded))
                 .accessibilityValue(Format.percent(share))
                 .accessibilityHint("Buka folder ini")
@@ -171,47 +168,43 @@ struct DiskUsageView: View {
     }
 }
 
-/// Where the user is, with a way back up, and how big the folder on screen is. Built on the same columns as
-/// ``DiskUsageRow``: the back button sits above the icons, the folder names above theirs, the size above their sizes.
-private struct FolderHeader: View {
-    let model: DiskUsageModel
+/// Where the user is and how big the folder on screen is, above its list. Built like ``SummaryHeader``, with the way
+/// back above the size.
+private struct FolderSummary: View {
     let folder: DiskUsageItem
+    let path: [DiskUsageItem]
+    let goTo: (Int) -> Void
+    @Environment(PermissionCenter.self) private var permissions
 
     var body: some View {
-        HStack(spacing: Design.Spacing.m) {
-            Group {
-                if model.path.count > 1 {
-                    Button {
-                        model.goUp()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .fontWeight(.semibold)
-                            .frame(width: 24, height: 24)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.tint)
-                    .keyboardShortcut(.upArrow, modifiers: .command)
-                    .help("Balik ke folder di atasnya")
-                    .accessibilityLabel("Balik")
-                } else {
-                    Image(systemName: "house")
-                        .foregroundStyle(.secondary)
-                        .accessibilityHidden(true)
-                }
+        VStack(alignment: .leading, spacing: Design.Spacing.s) {
+            Breadcrumb(path: path, goTo: goTo)
+            HStack(alignment: .firstTextBaseline, spacing: Design.Spacing.s) {
+                RollingSize(bytes: folder.bytes, isComplete: folder.isComplete)
+                    .font(Design.Typography.metric)
+                    .monospacedDigit()
+                Text("di folder ini")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
             }
-            .frame(width: 24)
-            Breadcrumb(path: model.path) { model.goBack(to: $0) }
-            Spacer(minLength: Design.Spacing.m)
-            SizeText(bytes: folder.bytes, isComplete: folder.isComplete)
-                .fontWeight(.semibold)
-                .foregroundStyle(.primary)
-                .monospacedDigit()
-            // Above the rows' chevrons.
-            Color.clear
-                .frame(width: 16, height: 1)
+            .accessibilityElement(children: .combine)
+            // While the folder on screen has parts macOS keeps closed without Full Disk Access, its size is too low.
+            if !folder.isComplete, !permissions.hasFullDiskAccess {
+                NoticeBanner(
+                    tone: .warning, symbol: "lock.fill",
+                    message: Text(
+                        "Sebagian isi folder ini nggak bisa dibaca Havus, jadi ukurannya belum lengkap. Nyalain Akses Disk Penuh, terus pindai ulang."
+                    )
+                ) {
+                    Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
+                }
+                .padding(.top, Design.Spacing.xs)
+            }
         }
-        .font(.title3)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, Design.pageMargin)
+        .padding(.top, Design.Spacing.l)
+        .padding(.bottom, Design.Spacing.m)
     }
 }
 
@@ -232,6 +225,7 @@ private struct Breadcrumb: View {
                 .lineLimit(1)
                 .truncationMode(.middle)
         }
+        .font(.callout)
     }
 
     /// `nil` stands for the folders left out.
@@ -240,7 +234,7 @@ private struct Breadcrumb: View {
             ForEach(Array(indices.enumerated()), id: \.offset) { position, index in
                 if position > 0 {
                     Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
+                        .font(.caption2.weight(.semibold))
                         .foregroundStyle(.tertiary)
                         .accessibilityHidden(true)
                 }
@@ -264,7 +258,7 @@ private struct Breadcrumb: View {
             Button {
                 goTo(index)
             } label: {
-                name(index)
+                label(index)
             }
             .buttonStyle(.plain)
             .foregroundStyle(.tint)
@@ -273,14 +267,21 @@ private struct Breadcrumb: View {
 
     /// The folder on screen.
     private func title(_ index: Int) -> some View {
-        name(index)
+        label(index)
             .fontWeight(.semibold)
             .foregroundStyle(.primary)
             .accessibilityAddTraits(.isHeader)
     }
 
-    private func name(_ index: Int) -> Text {
-        Text(path[index].name)
+    /// The home folder gets a house in front of its name.
+    private func label(_ index: Int) -> some View {
+        HStack(spacing: Design.Spacing.xs) {
+            if index == 0 {
+                Image(systemName: "house")
+                    .accessibilityHidden(true)
+            }
+            Text(path[index].name)
+        }
     }
 }
 
@@ -292,7 +293,7 @@ private struct DiskUsageRow: View {
 
     var body: some View {
         HStack(spacing: Design.Spacing.m) {
-            FileIcon(url: item.url, size: 24)
+            FileIcon(url: item.url)
             HStack(spacing: Design.Spacing.s) {
                 Text(item.name)
                     .lineLimit(1)
@@ -306,11 +307,11 @@ private struct DiskUsageRow: View {
                 .frame(width: 120)
             SizeText(bytes: item.bytes, isComplete: item.isComplete)
                 .monospacedDigit()
-                .frame(minWidth: 80, alignment: .trailing)
+                .frame(minWidth: Design.Column.size, alignment: .trailing)
             disclosure
-                .frame(width: 16)
+                .frame(width: Design.Column.chevron)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Design.Spacing.s)
         .contentShape(Rectangle())
         .help(Format.path(item.url))
     }
@@ -339,9 +340,9 @@ private struct OtherItemsRow: View {
     var body: some View {
         HStack(spacing: Design.Spacing.m) {
             Image(systemName: "ellipsis.circle")
-                .font(.system(size: 18))
+                .font(.system(size: 20))
                 .foregroundStyle(.secondary)
-                .frame(width: 24, height: 24)
+                .frame(width: Design.Column.icon, height: Design.Column.icon)
                 .accessibilityHidden(true)
             Text("\(other.count) item lain")
                 .foregroundStyle(.secondary)
@@ -350,11 +351,11 @@ private struct OtherItemsRow: View {
                 .frame(width: 120)
             Text(Format.bytes(other.bytes))
                 .monospacedDigit()
-                .frame(minWidth: 80, alignment: .trailing)
+                .frame(minWidth: Design.Column.size, alignment: .trailing)
             Color.clear
-                .frame(width: 16)
+                .frame(width: Design.Column.chevron, height: 1)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Design.Spacing.s)
         .help("Item yang lebih kecil, digabung biar daftarnya nggak kepanjangan.")
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isStaticText)

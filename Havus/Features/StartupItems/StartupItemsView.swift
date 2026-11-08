@@ -11,15 +11,21 @@ struct StartupItemsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PageHeader(item: .startupItems)
-                .padding([.horizontal, .top], Design.Spacing.xxl)
-                .padding(.bottom, Design.Spacing.l)
-            content
+            PhaseContent(key: stateKey) {
+                content
+            }
             ActionBar {
                 Text("Item lain, kayak aplikasi yang kebuka pas login, diatur di Pengaturan Sistem.")
                     .foregroundStyle(.secondary)
             } trailing: {
                 Button("Buka Login Items") { model.openLoginItemsSettings() }
+            }
+        }
+        .toolbar {
+            if model.hasLoaded {
+                ToolbarItem(placement: .primaryAction) {
+                    RescanButton { model.rescan() }
+                }
             }
         }
         .task { model.refresh() }
@@ -51,14 +57,18 @@ struct StartupItemsView: View {
         }
     }
 
+    private var stateKey: String {
+        if !model.hasLoaded { return "loading" }
+        return model.agents.isEmpty ? "empty" : "list"
+    }
+
     @ViewBuilder
     private var content: some View {
         if !model.hasLoaded {
-            ProgressView("Lagi ngecek yang jalan otomatis…")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            ScanProgress(symbol: SidebarItem.startupItems.symbol, title: Text("Lagi ngecek yang jalan otomatis…"))
         } else if model.agents.isEmpty {
-            MessageView(
-                symbol: "checkmark.seal", title: "Nggak ada launch agent",
+            EmptyState(
+                symbol: "checkmark.seal", title: Text("Nggak ada launch agent"),
                 message: Text("Belum ada aplikasi yang masang launch agent di akun kamu."))
         } else {
             list
@@ -66,47 +76,40 @@ struct StartupItemsView: View {
     }
 
     private var list: some View {
-        List {
-            if let file = model.lastRemoval {
-                Label("\(file) udah dipindah ke Tong Sampah.", systemImage: "checkmark.circle")
-                    .foregroundStyle(.secondary)
-            }
-            Section {
-                ForEach(model.agents) { agent in
-                    StartupItemRow(
-                        agent: agent, status: model.status(of: agent), isRunning: model.isRunning(agent),
-                        isOn: model.isOn(agent), isChanging: model.pendingChanges[agent.id] != nil,
-                        setOn: { model.setOn($0, for: agent) }
-                    ) {
-                        actions(for: agent)
-                    }
-                    .contextMenu { actions(for: agent) }
+        RowList {
+            SummaryHeader {
+                Text("\(model.agents.count) launch agent")
+            } caption: {
+                Text("di akun kamu")
+            } notes: {
+                if let file = model.lastRemoval {
+                    NoticeBanner(
+                        tone: .success, symbol: "checkmark",
+                        message: Text("\(file) udah dipindah ke Tong Sampah."))
                 }
-            } header: {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("\(model.agents.count) launch agent")
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(.primary)
-                    Spacer()
-                    Button("Pindai Ulang") { model.rescan() }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.tint)
-                }
-                .padding(.bottom, Design.Spacing.s)
             }
-            // A row rather than the section footer, which macOS cuts off after one line.
+        } content: {
+            ForEach(Array(model.agents.enumerated()), id: \.element.id) { index, agent in
+                if index > 0 {
+                    RowDivider(inset: Design.Column.icon + Design.Spacing.m)
+                }
+                StartupItemRow(
+                    agent: agent, status: model.status(of: agent), isRunning: model.isRunning(agent),
+                    isOn: model.isOn(agent), isChanging: model.pendingChanges[agent.id] != nil,
+                    setOn: { model.setOn($0, for: agent) }
+                ) {
+                    actions(for: agent)
+                }
+                .contextMenu { actions(for: agent) }
+            }
             Text(
                 "Mending dimatiin aja. Banyak aplikasi bikin lagi agent-nya kalau file-nya dihapus, sedangkan agent yang dimatiin biasanya tetap mati. Biar beres, hapus aplikasinya lewat **Hapus Aplikasi**."
             )
             .font(.callout)
             .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.top, Design.Spacing.s)
-            .listRowSeparator(.hidden)
+            .frame(maxWidth: Design.paragraphWidth, alignment: .leading)
+            .padding(.top, Design.Spacing.l)
         }
-        .listStyle(.inset)
-        .scrollContentBackground(.hidden)
-        .contentMargins(.horizontal, Design.Spacing.l, for: .scrollContent)
     }
 
     /// In the row's menu and in its right-click menu.
@@ -185,8 +188,8 @@ private struct StartupItemRow<Actions: View>: View {
 
     var body: some View {
         HStack(spacing: Design.Spacing.m) {
-            FileIcon(url: agent.owner?.url ?? agent.url, size: 28)
-            VStack(alignment: .leading, spacing: 2) {
+            FileIcon(url: agent.owner?.url ?? agent.url)
+            VStack(alignment: .leading, spacing: Design.Spacing.xxs) {
                 HStack(spacing: Design.Spacing.s) {
                     Text(verbatim: agent.name)
                         .lineLimit(1)
@@ -225,7 +228,7 @@ private struct StartupItemRow<Actions: View>: View {
             .fixedSize()
             .accessibilityLabel(Text("Pilihan lain buat \(agent.name)"))
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Design.Spacing.s)
     }
 
     @ViewBuilder

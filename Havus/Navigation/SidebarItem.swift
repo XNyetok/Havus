@@ -17,15 +17,16 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
+    /// One line under the title in the toolbar, so no period at the end.
     var subtitle: LocalizedStringKey {
         switch self {
-        case .overview: "Kondisi Mac kamu sekarang."
-        case .systemJunk: "Cache, log, dan sisa file yang aman dibuang."
-        case .developerJunk: "Sisa build dan cache tool ngoding yang bisa dibikin ulang."
-        case .uninstaller: "Buang aplikasi sekalian sama file sisanya."
-        case .largeFiles: "Cari file yang makan tempat tapi jarang kamu buka."
-        case .diskUsage: "Lihat folder mana yang paling makan tempat."
-        case .startupItems: "Program yang jalan sendiri di belakang layar, tanpa kamu buka."
+        case .overview: "Kondisi Mac kamu sekarang"
+        case .systemJunk: "Cache, log, dan sisa file yang aman dibuang"
+        case .developerJunk: "Sisa build dan cache tool ngoding yang bisa dibikin ulang"
+        case .uninstaller: "Buang aplikasi sekalian sama file sisanya"
+        case .largeFiles: "File yang makan tempat tapi jarang kamu buka"
+        case .diskUsage: "Folder mana yang paling makan tempat"
+        case .startupItems: "Program yang jalan sendiri di belakang layar"
         }
     }
 
@@ -34,10 +35,10 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
         case .overview: "gauge.with.dots.needle.33percent"
         case .systemJunk: "sparkles"
         case .developerJunk: "hammer"
-        case .uninstaller: "square.grid.2x2"
+        case .uninstaller: "xmark.app"
         case .largeFiles: "doc.text.magnifyingglass"
-        case .diskUsage: "chart.bar.doc.horizontal"
-        case .startupItems: "autostartstop"
+        case .diskUsage: "chart.pie"
+        case .startupItems: "power"
         }
     }
 }

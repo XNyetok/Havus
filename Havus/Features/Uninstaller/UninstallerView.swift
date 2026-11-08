@@ -7,17 +7,11 @@ struct UninstallerView: View {
     @State private var isConfirming = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            PageHeader(item: .uninstaller)
-                .padding([.horizontal, .top], Design.Spacing.xxl)
-                .padding(.bottom, Design.Spacing.l)
-            Divider()
-            HSplitView {
-                appList
-                    .frame(minWidth: 240, idealWidth: 280, maxWidth: 360)
-                detail
-                    .frame(minWidth: 380, maxWidth: .infinity, maxHeight: .infinity)
-            }
+        HSplitView {
+            appList
+                .frame(minWidth: 240, idealWidth: 270, maxWidth: 360)
+            detail
+                .frame(minWidth: 380, maxWidth: .infinity, maxHeight: .infinity)
         }
         .searchable(text: $model.searchText, placement: .toolbar, prompt: "Cari aplikasi")
         .task {
@@ -67,15 +61,24 @@ struct UninstallerView: View {
 
     @ViewBuilder
     private var detail: some View {
-        if let app = model.selectedApp {
-            AppDetail(app: app, model: model) { isConfirming = true }
-        } else if let outcome = model.outcome {
-            OutcomeView(outcome: outcome)
-        } else {
-            ContentUnavailableView(
-                "Pilih aplikasi", systemImage: "square.grid.2x2",
-                description: Text("Pilih app di sebelah kiri buat lihat file-file sisanya."))
+        PhaseContent(key: detailKey) {
+            if let app = model.selectedApp {
+                AppDetail(app: app, model: model) { isConfirming = true }
+            } else if let outcome = model.outcome {
+                OutcomeView(outcome: outcome)
+            } else {
+                EmptyState(
+                    symbol: SidebarItem.uninstaller.symbol,
+                    title: Text("Pilih aplikasi"),
+                    message: Text("Pilih app di sebelah kiri buat lihat file-file sisanya."))
+            }
         }
+    }
+
+    /// Each app gets its own key, so switching apps crossfades too.
+    private var detailKey: String {
+        if let app = model.selectedApp { return app.id.absoluteString }
+        return model.outcome == nil ? "none" : "outcome"
     }
 }
 
@@ -85,7 +88,7 @@ private struct AppRow: View {
 
     var body: some View {
         HStack(spacing: Design.Spacing.s) {
-            FileIcon(url: app.url, size: 28)
+            FileIcon(url: app.url)
             VStack(alignment: .leading, spacing: 1) {
                 Text(app.name)
                     .lineLimit(1)
@@ -118,19 +121,33 @@ private struct AppDetail: View {
                 VStack(alignment: .leading, spacing: Design.Spacing.l) {
                     header
                     if model.isSelectedAppRunning {
-                        runningWarning
+                        NoticeBanner(
+                            tone: .warning, symbol: "exclamationmark.triangle.fill",
+                            message: Text("\(app.name) lagi jalan. Tutup dulu sebelum dihapus ya.")
+                        ) {
+                            Button("Tutup Aplikasi") { model.quitSelectedApp() }
+                        }
                     }
                     if !permissions.hasFullDiskAccess, model.leftovers.contains(where: { !$0.isFullyReadable }) {
-                        unreadableNotice
+                        NoticeBanner(
+                            tone: .warning, symbol: "lock.fill",
+                            message: Text(
+                                "Ada file sisa yang nggak bisa dibaca Havus, jadi ukurannya belum lengkap. Nyalain Akses Disk Penuh biar kebaca semua."
+                            )
+                        ) {
+                            Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
+                        }
                     }
                     components
                 }
-                .padding(Design.Spacing.xl)
+                .padding(Design.pageMargin)
             }
             ActionBar {
                 Text("\(Format.bytes(model.selectedBytes)) bakal dipindah ke Tong Sampah")
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .animation(Design.Motion.quick, value: model.selectedBytes)
             } trailing: {
                 Button(removeTitle, action: onRemove)
                     .buttonStyle(.borderedProminent)
@@ -146,8 +163,8 @@ private struct AppDetail: View {
 
     private var header: some View {
         HStack(spacing: Design.Spacing.l) {
-            FileIcon(url: app.url, size: 64)
-            VStack(alignment: .leading, spacing: 2) {
+            FileIcon(url: app.url, size: 56)
+            VStack(alignment: .leading, spacing: Design.Spacing.xxs) {
                 Text(app.name)
                     .font(.title2.weight(.semibold))
                 Group {
@@ -164,34 +181,6 @@ private struct AppDetail: View {
         }
     }
 
-    private var runningWarning: some View {
-        HStack(spacing: Design.Spacing.m) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
-                .accessibilityHidden(true)
-            Text("\(app.name) lagi jalan. Tutup dulu sebelum dihapus ya.")
-            Spacer()
-            Button("Tutup \(app.name)") { model.quitSelectedApp() }
-        }
-        .card()
-    }
-
-    /// Some leftovers are in places macOS hides without Full Disk Access, so their size is unknown or too low.
-    private var unreadableNotice: some View {
-        HStack(spacing: Design.Spacing.m) {
-            Image(systemName: "lock.fill")
-                .foregroundStyle(.orange)
-                .accessibilityHidden(true)
-            Text(
-                "Ada file sisa yang nggak bisa dibaca Havus, jadi ukurannya belum lengkap. Nyalain Akses Disk Penuh biar kebaca semua."
-            )
-            .fixedSize(horizontal: false, vertical: true)
-            Spacer()
-            Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
-        }
-        .card()
-    }
-
     private var components: some View {
         VStack(alignment: .leading, spacing: 0) {
             ComponentRow(
@@ -200,20 +189,22 @@ private struct AppDetail: View {
                 isSelected: model.includesApp, isEnabled: !model.isSelectedAppExcluded
             ) { model.includesApp.toggle() }
 
-            Divider()
-
             if model.isLoadingLeftovers {
+                Divider()
                 HStack(spacing: Design.Spacing.s) {
                     ProgressView().controlSize(.small)
                     Text("Lagi nyari file sisa…").foregroundStyle(.secondary)
                 }
                 .padding(Design.Spacing.l)
             } else if model.leftovers.isEmpty {
+                Divider()
                 Text("Nggak ada file sisa yang ketemu.")
                     .foregroundStyle(.secondary)
                     .padding(Design.Spacing.l)
             } else {
                 ForEach(model.leftovers) { leftover in
+                    Divider()
+                        .padding(.leading, Design.Spacing.l + Design.Column.checkbox + Design.Spacing.m)
                     ComponentRow(
                         title: leftover.kind.title, path: Format.path(leftover.url), size: leftover.size,
                         isSizeComplete: leftover.isFullyReadable,
@@ -247,10 +238,10 @@ private struct ComponentRow: View {
     var body: some View {
         HStack(spacing: Design.Spacing.m) {
             SelectionBox(state: isSelected ? .on : .off, action: toggle)
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: Design.Spacing.xxs) {
                 HStack(spacing: Design.Spacing.s) {
                     Text(title)
-                        .font(.body.weight(.medium))
+                        .font(Design.Typography.rowTitle)
                     if let tag {
                         Tag(text: tag, tint: tagTint)
                     }
@@ -262,7 +253,7 @@ private struct ComponentRow: View {
                     .truncationMode(.middle)
                     .help(path)
             }
-            Spacer()
+            Spacer(minLength: Design.Spacing.m)
             if let size {
                 SizeText(bytes: size, isComplete: isSizeComplete)
                     .monospacedDigit()
@@ -284,16 +275,19 @@ private struct OutcomeView: View {
 
     var body: some View {
         if outcome.appBlocked {
-            MessageView(
-                symbol: "exclamationmark.triangle", symbolTint: .orange,
-                title: "Belum berhasil",
+            EmptyState(
+                symbol: "exclamationmark.triangle", tint: .orange,
+                title: Text("Belum berhasil"),
                 message: Text(
                     "macOS nolak mindahin \(outcome.appName). Coba nyalain Havus di **Privacy & Security → App Management**, atau hapus manual lewat Finder."
-                ),
-                actionTitle: "Buka Pengaturan"
-            ) { permissions.openAppManagementSettings() }
+                )
+            ) {
+                Button("Buka Pengaturan") { permissions.openAppManagementSettings() }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+            }
         } else {
-            MessageView(symbol: "checkmark.circle", title: "Beres!", message: message)
+            EmptyState(symbol: "checkmark", title: Text("Beres!"), message: message)
         }
     }
 
