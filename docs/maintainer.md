@@ -152,7 +152,7 @@ After this, macOS no longer blocks the first launch. Moving from the self-signed
 
 ## Reading a crash report
 
-When Havus crashes, macOS writes a report to `~/Library/Logs/DiagnosticReports/` on the user's Mac, named like `Havus-2026-11-08-201402.ips`, and later moves it into the `Retired` folder there. Apple passes crash reports on only to developers of App Store and TestFlight apps, so a report reaches you only when the user sends it.
+When Havus crashes, macOS writes a report to `~/Library/Logs/DiagnosticReports/` on the user's Mac, named like `Havus-2026-11-08-201402.ips`, and later moves it into the `Retired` folder there. Apple passes crash reports on only to developers of App Store and TestFlight apps, so a report reaches you only when the user sends it. Havus offers that at its next launch, and the user attaches the report to a GitHub issue or an email as `Havus-2026-11-08-201402.ips.txt`, with their home folder written as `~` (see [Crash reports](architecture.md#crash-reports)). The symbolicator below reads that file as it is.
 
 Release builds are stripped, so the report shows Havus's own code only as offsets into the binary. Every release after 0.3.0 comes with `Havus.app.dSYM.zip`, the debug symbols that turn those offsets into function names and line numbers. A dSYM fits only the build it came from, because the report names the binary by its UUID, and `scripts/build-release.sh` checks that the two match. 0.3.0 and earlier have no dSYM.
 

@@ -7,6 +7,7 @@ struct HavusApp: App {
     @State private var permissions = PermissionCenter()
     @State private var updates = UpdateCenter()
     @State private var exclusions = ExclusionStore()
+    @State private var problemReports = ProblemReportCenter()
 
     var body: some Scene {
         Window("Havus", id: "main") {
@@ -15,6 +16,7 @@ struct HavusApp: App {
                 .environment(permissions)
                 .environment(updates)
                 .environment(exclusions)
+                .environment(problemReports)
                 .frame(minWidth: 860, minHeight: 560)
         }
         .defaultSize(width: 1040, height: 700)
@@ -22,6 +24,7 @@ struct HavusApp: App {
         .commands {
             AboutCommands(navigator: navigator)
             UpdateCommands(updates: updates)
+            ProblemReportCommands(reports: problemReports)
         }
 
         Settings {
