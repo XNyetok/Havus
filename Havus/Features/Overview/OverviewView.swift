@@ -67,7 +67,7 @@ struct OverviewView: View {
         case .startupItems:
             tools.startupItems.hasLoaded
                 ? .info(Text("\(tools.startupItems.agents.count) launch agent")) : nil
-        case .overview: nil
+        case .overview, .about: nil
         }
     }
 

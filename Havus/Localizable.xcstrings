@@ -567,6 +567,16 @@
         }
       }
     },
+    "Aman" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safe"
+          }
+        }
+      }
+    },
     "Aplikasi" : {
       "localizations" : {
         "en" : {
@@ -603,6 +613,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Back to the enclosing folder"
+          }
+        }
+      }
+    },
+    "Bantu biaya notarisasi Apple lewat Saweria" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help pay for Apple notarization on Saweria"
           }
         }
       }
@@ -1059,6 +1079,16 @@
         }
       }
     },
+    "Catatan Rilis" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Release Notes"
+          }
+        }
+      }
+    },
     "Catatan aktivitas dan laporan crash dari app. Biasanya cuma kepake buat debugging." : {
       "localizations" : {
         "en" : {
@@ -1209,6 +1239,16 @@
         }
       }
     },
+    "Dibikin pakai Swift dan SwiftUI, tanpa library pihak ketiga." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Made with Swift and SwiftUI, with no third-party libraries."
+          }
+        }
+      }
+    },
     "Dibuka %@" : {
       "localizations" : {
         "en" : {
@@ -1275,6 +1315,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modified %@"
+          }
+        }
+      }
+    },
+    "Dukung Havus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support Havus"
           }
         }
       }
@@ -1776,6 +1826,16 @@
         }
       }
     },
+    "Janji Havus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Havus promises"
+          }
+        }
+      }
+    },
     "Kalau dibutuhin" : {
       "localizations" : {
         "en" : {
@@ -1842,6 +1902,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Manage"
+          }
+        }
+      }
+    },
+    "Kode sumber" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source code"
+          }
+        }
+      }
+    },
+    "Kode sumbernya terbuka di GitHub, dengan lisensi MIT." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The source code is on GitHub, under the MIT License."
           }
         }
       }
@@ -1996,6 +2076,16 @@
         }
       }
     },
+    "Lapor bug atau kasih ide" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report a bug or share an idea"
+          }
+        }
+      }
+    },
     "Launch agent" : {
       "localizations" : {
         "en" : {
@@ -2012,6 +2102,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "More than %@"
+          }
+        }
+      }
+    },
+    "Lewat GitHub Issues" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On GitHub Issues"
           }
         }
       }
@@ -2342,6 +2442,16 @@
         }
       }
     },
+    "Open source" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open source"
+          }
+        }
+      }
+    },
     "Paket Bun yang di-cache." : {
       "localizations" : {
         "en" : {
@@ -2378,6 +2488,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cached npm packages. Downloaded again if needed."
+          }
+        }
+      }
+    },
+    "Pembersih Mac yang ringan, open source, dan nggak kepo." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A lightweight, open-source Mac cleaner that minds its own business."
           }
         }
       }
@@ -2584,6 +2704,16 @@
         }
       }
     },
+    "Privat" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Private"
+          }
+        }
+      }
+    },
     "Program yang jalan sendiri di belakang layar" : {
       "localizations" : {
         "en" : {
@@ -2630,6 +2760,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cached Swift package repositories and manifests."
+          }
+        }
+      }
+    },
+    "Ringan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lightweight"
           }
         }
       }
@@ -2764,6 +2904,16 @@
         }
       }
     },
+    "Semua yang dihapus masuk Tong Sampah dulu, kecuali isi Tong Sampah yang sengaja kamu kosongin." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everything Havus removes goes to the Trash first, except when you choose to empty the Trash."
+          }
+        }
+      }
+    },
     "Semuanya dipindah ke Tong Sampah, jadi masih bisa dibalikin kalau kamu berubah pikiran." : {
       "localizations" : {
         "en" : {
@@ -2824,6 +2974,16 @@
         }
       }
     },
+    "Situs Havus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Havus website"
+          }
+        }
+      }
+    },
     "Skrip aplikasi" : {
       "localizations" : {
         "en" : {
@@ -2864,12 +3024,42 @@
         }
       }
     },
+    "Tanpa akun, iklan, atau telemetri. Havus cuma online buat ngecek versi baru, itu pun kalau kamu nyalain." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No account, ads or telemetry. Havus only goes online to check for a new version, and only if you turn that on."
+          }
+        }
+      }
+    },
     "Tanpa izin ini, beberapa lokasi (kayak Tong Sampah, lampiran Mail, dan data app lain) bakal dilewati. Buka **Privacy & Security → Full Disk Access**, terus nyalain Havus." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Without it, Havus skips some locations, like the Trash, Mail attachments, and other apps' data. Open **Privacy & Security → Full Disk Access**, then turn on Havus."
+          }
+        }
+      }
+    },
+    "Tautan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Links"
+          }
+        }
+      }
+    },
+    "Tentang Havus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About Havus"
           }
         }
       }
@@ -2944,12 +3134,32 @@
         }
       }
     },
+    "Udah yang terbaru" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Up to date"
+          }
+        }
+      }
+    },
     "Ukuran minimal" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Minimum size"
+          }
+        }
+      }
+    },
+    "Versi %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@"
           }
         }
       }
@@ -2986,6 +3196,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You're using the newest version."
+          }
+        }
+      }
+    },
+    "Versi, janji, dan tautan Havus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version, promises and links"
           }
         }
       }
@@ -3108,6 +3328,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "used"
+          }
+        }
+      }
+    },
+    "© 2026 Debi Kurnia · Lisensi MIT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2026 Debi Kurnia · MIT License"
           }
         }
       }

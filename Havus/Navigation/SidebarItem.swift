@@ -2,6 +2,8 @@ import SwiftUI
 
 enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case overview, systemJunk, developerJunk, uninstaller, largeFiles, diskUsage, startupItems
+    /// Not a row in the list: the card at the foot of the sidebar opens it.
+    case about
 
     var id: Self { self }
 
@@ -14,6 +16,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
         case .largeFiles: "File Gede & Lama"
         case .diskUsage: "Peta Disk"
         case .startupItems: "Jalan Otomatis"
+        case .about: "Tentang Havus"
         }
     }
 
@@ -27,6 +30,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
         case .largeFiles: "File yang makan tempat tapi jarang kamu buka"
         case .diskUsage: "Folder mana yang paling makan tempat"
         case .startupItems: "Program yang jalan sendiri di belakang layar"
+        case .about: "Versi, janji, dan tautan Havus"
         }
     }
 
@@ -39,6 +43,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
         case .largeFiles: "doc.text.magnifyingglass"
         case .diskUsage: "chart.pie"
         case .startupItems: "power"
+        case .about: "info.circle"
         }
     }
 }

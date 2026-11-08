@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct HavusApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    @State private var navigator = Navigator()
     @State private var permissions = PermissionCenter()
     @State private var updates = UpdateCenter()
     @State private var exclusions = ExclusionStore()
@@ -10,6 +11,7 @@ struct HavusApp: App {
     var body: some Scene {
         Window("Havus", id: "main") {
             RootView()
+                .environment(navigator)
                 .environment(permissions)
                 .environment(updates)
                 .environment(exclusions)
@@ -17,11 +19,29 @@ struct HavusApp: App {
         }
         .defaultSize(width: 1040, height: 700)
         .windowResizability(.contentMinSize)
-        .commands { UpdateCommands(updates: updates) }
+        .commands {
+            AboutCommands(navigator: navigator)
+            UpdateCommands(updates: updates)
+        }
 
         Settings {
             SettingsView()
                 .environment(exclusions)
+        }
+    }
+}
+
+/// **Havus → Tentang Havus** opens the page in the main window, in place of the small standard panel.
+struct AboutCommands: Commands {
+    let navigator: Navigator
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some Commands {
+        CommandGroup(replacing: .appInfo) {
+            Button("Tentang Havus") {
+                navigator.selection = .about
+                openWindow(id: "main")
+            }
         }
     }
 }

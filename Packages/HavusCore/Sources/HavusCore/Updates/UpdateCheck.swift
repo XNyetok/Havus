@@ -65,9 +65,9 @@ public enum UpdateCheck {
     /// `language` (such as `en` or `id`, from `Bundle.main.preferredLocalizations`). Any other language gets the
     /// Indonesian page, just as the app falls back to Indonesian.
     public static func changelogURL(for version: AppVersion, language: String?) -> URL? {
-        let isEnglish = language.map { Locale(identifier: $0).language.languageCode == .english } ?? false
         var components = URLComponents(
-            string: isEnglish ? "https://havus.web.id/en/changelog/" : "https://havus.web.id/changelog/")
+            string: Website.isEnglish(language)
+                ? "https://havus.web.id/en/changelog/" : "https://havus.web.id/changelog/")
         components?.fragment = "v\(version)"
         return components?.url
     }

@@ -40,6 +40,16 @@ struct UpdateCheckTests {
         #expect(link(nil) == "https://havus.web.id/changelog/#v0.3.0")
     }
 
+    @Test func linksToTheWebsiteInTheLanguageHavusRunsIn() {
+        let link = { (language: String?) in Website.home(language: language)?.absoluteString }
+
+        #expect(link("en") == "https://havus.web.id/en/")
+        #expect(link("en-GB") == "https://havus.web.id/en/")
+        #expect(link("id") == "https://havus.web.id/")
+        #expect(link("de") == "https://havus.web.id/")
+        #expect(link(nil) == "https://havus.web.id/")
+    }
+
     private func response(_ statusCode: Int) throws -> HTTPURLResponse {
         try #require(
             HTTPURLResponse(
