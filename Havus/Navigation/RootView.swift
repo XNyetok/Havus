@@ -12,6 +12,9 @@ struct RootView: View {
     @State private var largeFiles = LargeFilesModel()
     @State private var diskUsage = DiskUsageModel()
     @State private var startupItems = StartupItemsModel()
+    /// Whether the welcome sheet was answered to the end.
+    @AppStorage("Onboarding.done") private var hasOnboarded = false
+    @State private var isShowingOnboarding = false
 
     var body: some View {
         NavigationSplitView {
@@ -41,6 +44,17 @@ struct RootView: View {
                 .navigationSubtitle(Text(selection.subtitle))
         }
         .updateCheckAlert(updates)
+        // Once, on the first launch. Someone who already answered the update question before the sheet existed has
+        // been using Havus, so they skip it.
+        .onAppear {
+            isShowingOnboarding = !hasOnboarded && !updates.hasChosenAutomaticChecks
+        }
+        .sheet(isPresented: $isShowingOnboarding) {
+            OnboardingView {
+                hasOnboarded = true
+                isShowingOnboarding = false
+            }
+        }
         // Every page scans and removes with the latest list, and drops results the user just excluded.
         .onChange(of: exclusions.list, initial: true) { _, list in
             systemJunk.setExclusions(list)

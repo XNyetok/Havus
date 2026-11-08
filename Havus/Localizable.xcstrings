@@ -577,6 +577,16 @@
         }
       }
     },
+    "Akses Disk Penuh udah aktif" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full Disk Access is on"
+          }
+        }
+      }
+    },
     "Aktif" : {
       "localizations" : {
         "en" : {
@@ -633,6 +643,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Back"
+          }
+        }
+      }
+    },
+    "Balik ke Havus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Come back to Havus"
           }
         }
       }
@@ -1746,6 +1766,16 @@
         }
       }
     },
+    "Havus cuma nunjukin yang bisa dibersihin. Nggak ada yang dihapus tanpa persetujuan kamu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Havus only shows what can be cleaned up. Nothing is removed until you say so."
+          }
+        }
+      }
+    },
     "Havus kamu udah yang terbaru" : {
       "localizations" : {
         "en" : {
@@ -1956,6 +1986,16 @@
         }
       }
     },
+    "Kamu yang milih" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You choose"
+          }
+        }
+      }
+    },
     "Kata launchctl: %@" : {
       "localizations" : {
         "en" : {
@@ -1982,6 +2022,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Manage"
+          }
+        }
+      }
+    },
+    "Klik Buka Pengaturan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click Open Settings"
           }
         }
       }
@@ -2156,6 +2206,32 @@
         }
       }
     },
+    "Langkah %lld dari %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %lld of %lld"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Langkah %1$lld dari %2$lld"
+          }
+        }
+      }
+    },
+    "Lanjut" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
     "Lapor bug atau kasih ide" : {
       "localizations" : {
         "en" : {
@@ -2262,12 +2338,32 @@
         }
       }
     },
+    "Masih bisa dibalikin, kecuali isi Tong Sampah yang sengaja kamu kosongin." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can still put it back, unless you choose to empty the Trash."
+          }
+        }
+      }
+    },
     "Masih jalan" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Still running"
+          }
+        }
+      }
+    },
+    "Masuk Tong Sampah dulu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trash first"
           }
         }
       }
@@ -2362,12 +2458,32 @@
         }
       }
     },
+    "Nanti Aja" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Now"
+          }
+        }
+      }
+    },
     "Nggak Usah" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Thanks"
+          }
+        }
+      }
+    },
+    "Nggak ada akun, iklan, atau telemetri." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No account, ads or telemetry."
           }
         }
       }
@@ -2518,6 +2634,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Turn On"
+          }
+        }
+      }
+    },
+    "Nyalain Akses Disk Penuh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn On Full Disk Access"
+          }
+        }
+      }
+    },
+    "Nyalain Havus di daftar Full Disk Access" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn on Havus in the Full Disk Access list"
           }
         }
       }
@@ -2964,12 +3100,12 @@
         }
       }
     },
-    "Sehari sekali, Havus bisa ngecek lewat internet apakah ada versi baru. Nggak ada data apa pun soal kamu atau Mac kamu yang dikirim. Bisa kamu ubah kapan aja di menu **Havus → Cek Versi Baru Otomatis**." : {
+    "Sehari sekali, Havus bisa ngecek lewat internet apakah ada versi baru. Nggak ada data apa pun soal kamu atau Mac kamu yang dikirim. Bisa kamu ubah kapan aja di **Pengaturan → Umum**." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Once a day, Havus can check online whether there's a new version. Nothing about you or your Mac is sent. You can change this anytime in **Havus → Check for Updates Automatically**."
+            "value" : "Once a day, Havus can check online whether a new version is out. Nothing about you or your Mac is sent. You can change this anytime in **Settings → General**."
           }
         }
       }
@@ -2990,6 +3126,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Always running"
+          }
+        }
+      }
+    },
+    "Selamat datang di Havus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to Havus"
           }
         }
       }
@@ -3020,6 +3166,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Everything Havus removes goes to the Trash first, except when you choose to empty the Trash."
+          }
+        }
+      }
+    },
+    "Semuanya di Mac kamu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everything stays on your Mac"
           }
         }
       }
@@ -3448,6 +3604,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "macOS didn't let Havus move this file."
+          }
+        }
+      }
+    },
+    "macOS ngunci beberapa lokasi, kayak Tong Sampah, lampiran Mail, dan data app lain. Dengan izin ini Havus bisa ngecek semuanya, dan tetap cuma ngehapus yang kamu pilih." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS locks some places, like the Trash, Mail attachments and other apps' data. With this permission Havus can check all of them, and still only removes what you pick."
           }
         }
       }
