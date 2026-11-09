@@ -2824,6 +2824,16 @@
         }
       }
     },
+    "Mungkin punya aplikasi lain, cek dulu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "May belong to another app, review first"
+          }
+        }
+      }
+    },
     "Nanti" : {
       "localizations" : {
         "en" : {

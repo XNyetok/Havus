@@ -34,15 +34,19 @@ struct LeftoverFinderTests {
     private let app = InstalledApp(
         url: URL(filePath: "/Applications/Example.app"), name: "Example",
         bundleIdentifier: "com.example.Example", bundleName: "Example", version: "1.0")
+    /// ByHost preferences files carry the Mac's hardware UUID in their name.
+    private let hostUUID = "12345678-ABCD-4EF0-9876-543210FEDCBA"
 
     @Test func findsDataNamedAfterTheBundleIdentifier() throws {
         let home = try TemporaryHome()
         try home.makeFile("Library/Application Support/com.example.Example/data.db")
         try home.makeFile("Library/Caches/com.example.Example/cache")
         try home.makeFile("Library/Preferences/com.example.Example.plist")
-        try home.makeFile("Library/Containers/com.example.Example.Widget/Data/state")
+        try home.makeFile("Library/Preferences/ByHost/com.example.Example.\(hostUUID).plist")
+        try home.makeFile("Library/Containers/com.example.Example/Data/state")
         try home.makeFile("Library/Group Containers/ABCDE12345.com.example.Example/shared")
         try home.makeFile("Library/Saved Application State/com.example.Example.savedState/data")
+        try home.makeFile("Library/HTTPStorages/com.example.Example.binarycookies")
         try home.makeFile("Library/Application Support/com.other.App/data.db")
 
         let found = LeftoverFinder(home: home.url).leftovers(for: app)
@@ -52,11 +56,31 @@ struct LeftoverFinderTests {
                 "applicationSupport/com.example.Example",
                 "caches/com.example.Example",
                 "preferences/com.example.Example.plist",
-                "containers/com.example.Example.Widget",
+                "preferences/com.example.Example.\(hostUUID).plist",
+                "containers/com.example.Example",
                 "groupContainers/ABCDE12345.com.example.Example",
                 "savedState/com.example.Example.savedState",
+                "httpStorage/com.example.Example.binarycookies",
             ])
         #expect(found.allSatisfy { $0.match == .bundleIdentifier && $0.size > 0 })
+    }
+
+    @Test func flagsDataThatMayBelongToAnotherApp() throws {
+        let home = try TemporaryHome()
+        // Like the settings of Google Chrome for Testing (com.google.chrome.for.testing) next to Google Chrome's.
+        try home.makeFile("Library/Preferences/com.example.example.for.testing.plist")
+        try home.makeFile("Library/Preferences/ByHost/com.example.Example.Helper.\(hostUUID).plist")
+        try home.makeFile("Library/Containers/com.example.Example.Widget/Data/state")
+
+        let found = LeftoverFinder(home: home.url).leftovers(for: app)
+
+        #expect(
+            Set(found.map(\.url.lastPathComponent)) == [
+                "com.example.example.for.testing.plist",
+                "com.example.Example.Helper.\(hostUUID).plist",
+                "com.example.Example.Widget",
+            ])
+        #expect(found.allSatisfy { $0.match == .bundleIdentifierPrefix })
     }
 
     @Test func flagsLeftoversItCantRead() throws {

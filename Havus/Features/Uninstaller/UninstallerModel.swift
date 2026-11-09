@@ -149,7 +149,7 @@ final class UninstallerModel {
                 found.removeAll { self.exclusions.blocks($0.url) }
             }
             leftovers = found
-            // Name-based matches need a human look, so they start unselected.
+            // Matches by name or by the start of a bundle identifier need a human look, so they start unselected.
             leftoverSelection = Set(found.filter { $0.match == .bundleIdentifier }.map(\.id))
             isLoadingLeftovers = false
             Log.scan.notice(
