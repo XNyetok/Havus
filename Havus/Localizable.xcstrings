@@ -447,6 +447,44 @@
         }
       }
     },
+    "%lld file sisa %@ nggak bisa dipindah ke Tong Sampah karena lagi dipakai atau butuh izin." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%#@leftovers@"
+          },
+          "substitutions" : {
+            "leftovers" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "Couldn't move %arg leftover file from %2$@ to the Trash because it's in use or needs permission."
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "Couldn't move %arg leftover files from %2$@ to the Trash because they're in use or need permission."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld file sisa %2$@ nggak bisa dipindah ke Tong Sampah karena lagi dipakai atau butuh izin."
+          }
+        }
+      }
+    },
     "%lld file sisa %@ udah dipindah ke Tong Sampah (%@)." : {
       "localizations" : {
         "en" : {
@@ -560,6 +598,28 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld other items"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld item nggak bisa dibersihin karena lagi dipakai atau butuh izin." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item couldn't be cleaned up because it's in use or needs permission."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld items couldn't be cleaned up because they're in use or need permission."
                 }
               }
             }

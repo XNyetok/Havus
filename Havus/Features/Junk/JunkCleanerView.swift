@@ -314,15 +314,20 @@ private struct FinishedView: View {
     let onEmptyTrash: () -> Void
     @State private var hasAppeared = false
 
+    /// Every item failed, so nothing was cleaned up.
+    private var failedEntirely: Bool {
+        summary.failedCount > 0 && summary.trashedBytes == 0 && summary.deletedBytes == 0
+    }
+
     var body: some View {
         VStack(spacing: Design.Spacing.m) {
             SymbolDisc(
-                symbol: summary.trashNeedsPermission ? "lock.shield" : "checkmark",
-                tint: summary.trashNeedsPermission ? .orange : .accentColor
+                symbol: symbol,
+                tint: summary.trashNeedsPermission || failedEntirely ? .orange : .accentColor
             )
             .symbolEffect(.bounce, value: hasAppeared)
             .padding(.bottom, Design.Spacing.xs)
-            Text(summary.trashNeedsPermission ? "Butuh izin dulu" : "Beres!")
+            title
                 .font(.title2.weight(.semibold))
             VStack(spacing: Design.Spacing.xs) {
                 if summary.trashNeedsPermission {
@@ -336,7 +341,9 @@ private struct FinishedView: View {
                 if summary.deletedBytes > 0 {
                     Text("\(Format.bytes(summary.deletedBytes)) udah dihapus permanen.")
                 }
-                if summary.failedCount > 0 {
+                if failedEntirely {
+                    Text("\(summary.failedCount) item nggak bisa dibersihin karena lagi dipakai atau butuh izin.")
+                } else if summary.failedCount > 0 {
                     Text("\(summary.failedCount) item dilewati karena lagi dipakai atau butuh izin.")
                 }
                 if summary == CleanupSummary() {
@@ -360,5 +367,15 @@ private struct FinishedView: View {
         .padding(Design.Spacing.xl)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear { hasAppeared = true }
+    }
+
+    private var symbol: String {
+        if summary.trashNeedsPermission { return "lock.shield" }
+        return failedEntirely ? "exclamationmark.triangle" : "checkmark"
+    }
+
+    private var title: Text {
+        if summary.trashNeedsPermission { return Text("Butuh izin dulu") }
+        return failedEntirely ? Text("Belum berhasil") : Text("Beres!")
     }
 }
