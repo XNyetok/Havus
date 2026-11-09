@@ -146,6 +146,12 @@ public struct LaunchAgentCatalog: Sendable {
 
     /// Tries what macOS itself shows in Login Items first, then the app that holds the program, then the label.
     static func owner(of job: LaunchAgent.Job, info: [String: Any], apps: AppIndex) -> LaunchAgent.Owner? {
+        namedOwner(of: job, info: info, apps: apps) ?? apps.app(labelling: job.label).map(LaunchAgent.Owner.init)
+    }
+
+    /// The owner the file itself points to: the app in `AssociatedBundleIdentifiers`, or the app that holds the program.
+    /// Unlike the label, neither can be another app's whose bundle identifier only starts the same way.
+    static func namedOwner(of job: LaunchAgent.Job, info: [String: Any], apps: AppIndex) -> LaunchAgent.Owner? {
         let associated = info["AssociatedBundleIdentifiers"]
         let bundleIDs = associated as? [String] ?? (associated as? String).map { [$0] } ?? []
         if let app = bundleIDs.lazy.compactMap(apps.app(withBundleIdentifier:)).first {
@@ -159,8 +165,17 @@ public struct LaunchAgentCatalog: Sendable {
                     url: bundle, name: bundle.deletingPathExtension().lastPathComponent, installedApp: nil)
             }
         }
+        return nil
+    }
 
-        return apps.app(labelling: job.label).map(LaunchAgent.Owner.init)
+    /// Whether the agent file at `url` points to `app` as its owner, through ``namedOwner(of:info:apps:)``.
+    static func isAgent(at url: URL, of app: InstalledApp) -> Bool {
+        guard
+            let data = try? Data(contentsOf: url),
+            let info = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
+            let job = job(from: info)
+        else { return false }
+        return namedOwner(of: job, info: info, apps: AppIndex([app]))?.installedApp == app
     }
 
     /// `/Applications/Example.app/Contents/Library/Helper.app/Contents/MacOS/Helper` → `/Applications/Example.app`

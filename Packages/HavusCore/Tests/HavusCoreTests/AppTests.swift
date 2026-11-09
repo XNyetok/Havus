@@ -83,6 +83,42 @@ struct LeftoverFinderTests {
         #expect(found.allSatisfy { $0.match == .bundleIdentifierPrefix })
     }
 
+    @Test func trustsLaunchAgentsThatPointToTheApp() throws {
+        let home = try TemporaryHome()
+        try home.makePlist(
+            "Library/LaunchAgents/com.example.Example.helper.plist",
+            [
+                "Label": "com.example.Example.helper", "Program": "/usr/local/bin/helper",
+                "AssociatedBundleIdentifiers": ["com.example.Example"],
+            ])
+        try home.makePlist(
+            "Library/LaunchAgents/com.example.Example.launcher.plist",
+            [
+                "Label": "com.example.Example.launcher",
+                "ProgramArguments": ["/Applications/Example.app/Contents/MacOS/launcher", "--at-login"],
+            ])
+        try home.makePlist(
+            "Library/LaunchAgents/com.example.Example.updater.plist",
+            ["Label": "com.example.Example.updater", "Program": "/Applications/Other.app/Contents/MacOS/updater"])
+        // Like an agent of Google Chrome for Testing next to Google Chrome's files.
+        try home.makePlist(
+            "Library/LaunchAgents/com.example.example.for.testing.agent.plist",
+            [
+                "Label": "com.example.example.for.testing.agent", "Program": "/usr/bin/true",
+                "AssociatedBundleIdentifiers": "com.example.example.for.testing",
+            ])
+
+        let found = LeftoverFinder(home: home.url).leftovers(for: app)
+
+        #expect(
+            Dictionary(uniqueKeysWithValues: found.map { ($0.url.lastPathComponent, $0.match) }) == [
+                "com.example.Example.helper.plist": .bundleIdentifier,
+                "com.example.Example.launcher.plist": .bundleIdentifier,
+                "com.example.Example.updater.plist": .bundleIdentifierPrefix,
+                "com.example.example.for.testing.agent.plist": .bundleIdentifierPrefix,
+            ])
+    }
+
     @Test func flagsLeftoversItCantRead() throws {
         let home = try TemporaryHome()
         let support = try home.makeFolder("Library/Application Support/com.example.Example")

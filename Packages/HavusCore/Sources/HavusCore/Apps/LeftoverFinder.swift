@@ -9,7 +9,8 @@ public struct Leftover: Sendable, Hashable, Identifiable {
 
     public enum Match: Sendable, Hashable {
         /// Named after the app's bundle identifier, alone or with an ending macOS gives an app's files, such as
-        /// `.plist`. Reliable, selected by default.
+        /// `.plist`. Also a launch agent whose name only starts with it, when its file points to the app. Reliable,
+        /// selected by default.
         case bundleIdentifier
         /// Starts with the app's bundle identifier and a dot, so it may belong to another app whose identifier starts
         /// the same way, such as Google Chrome for Testing (`com.google.chrome.for.testing`) for Google Chrome. The
@@ -96,7 +97,7 @@ public struct LeftoverFinder: Sendable {
 
             for child in children {
                 let name = child.lastPathComponent.lowercased()
-                let match: Leftover.Match
+                var match: Leftover.Match
                 if let byIdentifier = Self.identifierMatch(name, bundleID: bundleID, kind: location.kind),
                     !others.contains(where: { Self.identifierMatch(name, bundleID: $0, kind: location.kind) != nil })
                 {
@@ -107,6 +108,12 @@ public struct LeftoverFinder: Sendable {
                     continue
                 }
                 guard !exclusions.blocks(child), seen.insert(child.pathComponents).inserted else { continue }
+                // A launch agent's file can say which app it belongs to, the way Jalan Otomatis reads it.
+                if match == .bundleIdentifierPrefix, location.kind == .launchAgents,
+                    LaunchAgentCatalog.isAgent(at: child, of: app)
+                {
+                    match = .bundleIdentifier
+                }
                 let measurement = DirectorySize.measure(child)
                 results.append(
                     Leftover(
