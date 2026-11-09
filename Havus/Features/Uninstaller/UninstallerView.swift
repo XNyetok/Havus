@@ -8,14 +8,17 @@ struct UninstallerView: View {
 
     var body: some View {
         HSplitView {
-            // HSplitView opens the list at its minimum width, and the divider runs up through the toolbar, so the
-            // minimum is what keeps the page's subtitle there clear of it ("Remove apps together with their leftover
-            // files" takes 259 points).
+            // HSplitView opens the list at its minimum width.
             appList
                 .frame(minWidth: 270, idealWidth: 270, maxWidth: 360)
             detail
                 .frame(minWidth: 380, maxWidth: .infinity, maxHeight: .infinity)
         }
+        // A split view that touches the toolbar reaches up under it, and its divider then cuts through the page's
+        // title, which moves right when the sidebar is hidden. Starting a point lower keeps it below the toolbar, as
+        // in full screen, and without a toolbar background no line marks the edge.
+        .padding(.top, 1)
+        .toolbarBackground(.hidden, for: .windowToolbar)
         .searchable(text: $model.searchText, placement: .toolbar, prompt: "Cari aplikasi")
         .task {
             model.loadAppsIfNeeded()
