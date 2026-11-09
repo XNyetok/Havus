@@ -80,6 +80,7 @@ The app speaks casual, friendly Indonesian. Keep it consistent:
 - Address the user as **"kamu"**, never "Anda".
 - Casual but clear: "nggak", "udah", "lagi" and "biar" are fine; avoid heavy slang and abbreviations.
 - Buttons are verbs: *Pindai*, *Bersihin*, *Pindahin ke Tong Sampah*, *Batal*.
+- Name macOS settings the way an Indonesian Mac shows them, such as *Privasi & Keamanan → Akses Disk Penuh* or *Umum → Item Masuk & Ekstensi*.
 - Dialogs that delete permanently are **never** playful: state the risk plainly.
 - Write UI strings as Indonesian literals in SwiftUI; Xcode adds them to `Localizable.xcstrings`.
 

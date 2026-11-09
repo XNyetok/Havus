@@ -82,7 +82,7 @@ struct OnboardingView: View {
                         .frame(maxWidth: .infinity)
                 } else {
                     OnboardingPoint(symbol: "1.circle", title: "Klik Buka Pengaturan", text: nil)
-                    OnboardingPoint(symbol: "2.circle", title: "Nyalain Havus di daftar Full Disk Access", text: nil)
+                    OnboardingPoint(symbol: "2.circle", title: "Nyalain Havus di daftar Akses Disk Penuh", text: nil)
                     OnboardingPoint(symbol: "3.circle", title: "Balik ke Havus", text: nil)
                 }
             }

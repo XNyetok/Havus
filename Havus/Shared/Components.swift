@@ -406,7 +406,7 @@ struct FullDiskAccessBanner: View {
                 symbol: "lock.shield",
                 title: Text("Akses Disk Penuh belum aktif"),
                 message: Text(
-                    "Tanpa izin ini, beberapa lokasi (kayak Tong Sampah, lampiran Mail, dan data app lain) bakal dilewati. Buka **Privacy & Security → Full Disk Access**, terus nyalain Havus."
+                    "Tanpa izin ini, beberapa lokasi (kayak Tong Sampah, lampiran Mail, dan data app lain) bakal dilewati. Buka **Privasi & Keamanan → Akses Disk Penuh**, terus nyalain Havus."
                 )
             ) {
                 Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
