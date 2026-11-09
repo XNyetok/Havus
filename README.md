@@ -19,7 +19,7 @@ The app speaks casual Indonesian and English, following your Mac's language. [Ri
 | **Developer junk** (*Sampah Developer*) | Xcode (DerivedData, Archives, Device Support, Previews), Simulator caches, Homebrew, npm, Yarn, pnpm, CocoaPods, SwiftPM, pip, Go, Gradle, Bun, Cargo |
 | **Uninstaller** (*Hapus Aplikasi*) | Removes an app together with its leftovers, or only the leftovers to "reset" it |
 | **Large & old files** (*File Gede & Lama*) | Finds big, rarely opened files using the Spotlight index, so it's fast. Press Space to look inside one with Quick Look |
-| **Disk map** (*Peta Disk*) | Shows which folders in your home folder take up the most space, biggest first. Click a folder to look inside. It only looks: nothing is removed here |
+| **Disk map** (*Peta Disk*) | Shows which folders in your home folder take up the most space, biggest first. Click a folder to look inside. It opens with your last scan and says how old it is, so you only wait when you scan again. It only looks: nothing is removed here |
 | **Startup items** (*Jalan Otomatis*) | Lists the launch agents in your Library with the app each belongs to. Turn one off, or move it to the Trash |
 
 ## Principles
@@ -27,7 +27,7 @@ The app speaks casual Indonesian and English, following your Mac's language. [Ri
 - **Safety first.** Every item is previewed and selectable. Everything goes to the Trash, except when you explicitly empty the Trash.
 - **Only touches what it knows.** Cleanup locations come from an auditable rule list ([`JunkRule+Catalog.swift`](Packages/HavusCore/Sources/HavusCore/Junk/JunkRule+Catalog.swift)), and every deletion is checked again by `PathGuard`.
 - **Leaves alone what you protect.** Files and folders on your exclusion list (**Settings → Exclusions**, or right-click a result) never show up in cleanup results, and `PathGuard` refuses to remove them or any folder that holds them.
-- **Private.** No telemetry, no analytics. Havus goes online for one thing only, and only if you turn it on: once a day it asks GitHub for the latest version number. Nothing about you or your Mac is sent.
+- **Private.** No telemetry, no analytics. Havus goes online for one thing only, and only if you turn it on: once a day it asks GitHub for the latest version number. Nothing about you or your Mac is sent, and what Havus keeps, such as your last disk map, stays on your Mac.
 - **Lightweight.** Native Swift + SwiftUI with zero third-party dependencies. Version 0.1.0: 1.5 MB app, about 34 MB of memory when idle.
 
 ## Requirements

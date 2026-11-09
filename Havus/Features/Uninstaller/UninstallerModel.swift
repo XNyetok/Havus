@@ -31,6 +31,8 @@ final class UninstallerModel {
     private(set) var isSelectedAppRunning = false
     private(set) var isRemoving = false
     private(set) var outcome: UninstallOutcome?
+    /// Goes up after each removal that moved something, so Peta Disk can tell when its map is older.
+    private(set) var removals = 0
 
     @ObservationIgnored private let catalog = AppCatalog()
     @ObservationIgnored private let finder = LeftoverFinder()
@@ -228,6 +230,9 @@ final class UninstallerModel {
             }
             if removedApp {
                 apps.removeAll { $0.id == app.id }
+            }
+            if removedApp || !removedLeftoverURLs.isEmpty {
+                removals += 1
             }
             selectedAppID = nil
             leftovers = []

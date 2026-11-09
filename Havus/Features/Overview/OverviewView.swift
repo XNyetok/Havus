@@ -96,7 +96,7 @@ struct OverviewView: View {
     private var diskUsageStatus: ToolStatus? {
         let model = tools.diskUsage
         switch model.phase {
-        case .idle: return nil
+        case .idle, .loading: return nil
         case .scanning: return .busy(Text("Lagi ngitung ukuran folder…"))
         case .results:
             guard let root = model.root else { return nil }

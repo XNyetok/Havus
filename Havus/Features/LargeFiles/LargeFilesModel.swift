@@ -45,6 +45,8 @@ final class LargeFilesModel {
     private(set) var files: [LargeFile] = []
     var selection: Set<LargeFile.ID> = []
     private(set) var lastRemoval: RemovalSummary?
+    /// Goes up after each move to the Trash that moved something, so Peta Disk can tell when its map is older.
+    private(set) var removals = 0
     /// The last search left the Photos library and the Music and TV folders out, for want of Full Disk Access.
     private(set) var skippedMediaLibraries = false
 
@@ -138,6 +140,9 @@ final class LargeFilesModel {
             let removed = Set(report.removed)
             files.removeAll { removed.contains($0.url) }
             selection.subtract(removed)
+            if !removed.isEmpty {
+                removals += 1
+            }
             lastRemoval = RemovalSummary(
                 count: removed.count,
                 bytes: targets.filter { removed.contains($0.url) }.reduce(0) { $0 + $1.size },
