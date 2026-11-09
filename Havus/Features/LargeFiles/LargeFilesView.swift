@@ -219,16 +219,22 @@ private struct RemovalNotice: View {
     let removal: RemovalSummary
 
     var body: some View {
-        if removal.failedCount > 0 {
-            NoticeBanner(
-                tone: .warning, symbol: "exclamationmark.triangle.fill",
-                message: Text(
-                    "\(removal.count) file (\(Format.bytes(removal.bytes))) dipindah ke Tong Sampah, \(removal.failedCount) gagal."
-                ))
-        } else {
+        if removal.failedCount == 0 {
             NoticeBanner(
                 tone: .success, symbol: "checkmark",
                 message: Text("\(removal.count) file (\(Format.bytes(removal.bytes))) udah dipindah ke Tong Sampah."))
+        } else if removal.count == 0 {
+            NoticeBanner(
+                tone: .warning, symbol: "exclamationmark.triangle.fill",
+                message: Text(
+                    "\(removal.failedCount) file nggak bisa dipindah ke Tong Sampah karena lagi dipakai atau butuh izin."
+                ))
+        } else {
+            NoticeBanner(
+                tone: .warning, symbol: "exclamationmark.triangle.fill",
+                message: Text(
+                    "\(removal.count) file (\(Format.bytes(removal.bytes))) dipindah ke Tong Sampah. \(removal.failedCount) file dilewati karena lagi dipakai atau butuh izin."
+                ))
         }
     }
 }
