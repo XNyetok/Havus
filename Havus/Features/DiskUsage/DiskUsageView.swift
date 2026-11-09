@@ -2,7 +2,7 @@ import HavusCore
 import SwiftUI
 
 /// "Peta Disk": the folders and files in the home folder, biggest first, each with a bar for its share of the
-/// folder on screen. Click a folder to see inside it. Read-only.
+/// folder on screen. Click a folder to see inside it. Read-only. Opens with the map of the last scan.
 struct DiskUsageView: View {
     let model: DiskUsageModel
     @Environment(PermissionCenter.self) private var permissions
@@ -11,6 +11,7 @@ struct DiskUsageView: View {
         PhaseContent(key: stateKey) {
             content
         }
+        .task { model.showSavedMap() }
         .toolbar {
             if model.phase == .results {
                 ToolbarItem(placement: .navigation) {
@@ -36,6 +37,7 @@ struct DiskUsageView: View {
     private var stateKey: String {
         switch model.phase {
         case .idle: "idle"
+        case .loading: "loading"
         case .scanning: "scanning"
         case .results: "results"
         }
@@ -65,10 +67,15 @@ struct DiskUsageView: View {
                 }
             }
 
+        // A saved map takes a split second to read: nothing to say in the meantime.
+        case .loading:
+            Color.clear
+
         case .scanning:
             ScanProgress(
                 symbol: SidebarItem.diskUsage.symbol,
                 title: Text("Lagi ngitung ukuran folder…"),
+                fraction: model.progressFraction,
                 detail: model.progress.map { Text("\(Format.bytes($0.bytes)) udah dihitung") },
                 cancel: { model.cancel() }
             )
@@ -86,7 +93,7 @@ struct DiskUsageView: View {
     private func results(_ folder: DiskUsageItem) -> some View {
         ZStack {
             RowList {
-                FolderSummary(folder: folder, path: model.path) { model.goBack(to: $0) }
+                FolderSummary(model: model, folder: folder)
             } content: {
                 contents(of: folder)
                 Text(
@@ -109,7 +116,9 @@ struct DiskUsageView: View {
         let children = folder.children ?? []
         if children.isEmpty, folder.otherItems.count == 0 {
             Group {
-                if folder.isComplete {
+                if model.isGone(folder) {
+                    Text("Folder ini udah nggak ada. Pindai ulang biar petanya ikut baru.")
+                } else if folder.isComplete {
                     Text("Folder ini kosong.")
                 } else {
                     Text("macOS nggak ngizinin Havus baca isi folder ini.")
@@ -177,17 +186,16 @@ struct DiskUsageView: View {
     }
 }
 
-/// Where the user is and how big the folder on screen is, above its list. Built like ``SummaryHeader``, with the way
-/// back above the size.
+/// Where the user is, how big the folder on screen is and when it was scanned, above its list. Built like
+/// ``SummaryHeader``, with the way back above the size.
 private struct FolderSummary: View {
+    let model: DiskUsageModel
     let folder: DiskUsageItem
-    let path: [DiskUsageItem]
-    let goTo: (Int) -> Void
     @Environment(PermissionCenter.self) private var permissions
 
     var body: some View {
         VStack(alignment: .leading, spacing: Design.Spacing.s) {
-            Breadcrumb(path: path, goTo: goTo)
+            Breadcrumb(path: model.path) { model.goBack(to: $0) }
             HStack(alignment: .firstTextBaseline, spacing: Design.Spacing.s) {
                 RollingSize(bytes: folder.bytes, isComplete: folder.isComplete)
                     .font(Design.Typography.metric)
@@ -197,23 +205,68 @@ private struct FolderSummary: View {
                     .foregroundStyle(.secondary)
             }
             .accessibilityElement(children: .combine)
-            // While the folder on screen has parts macOS keeps closed without Full Disk Access, its size is too low.
-            if !folder.isComplete, !permissions.hasFullDiskAccess {
-                NoticeBanner(
-                    tone: .warning, symbol: "lock.fill",
-                    message: Text(
-                        "Sebagian isi folder ini nggak bisa dibaca Havus, jadi ukurannya belum lengkap. Nyalain Akses Disk Penuh, terus pindai ulang."
-                    )
-                ) {
-                    Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
-                }
-                .padding(.top, Design.Spacing.xs)
+            if let date = model.scanDate(of: folder) {
+                ScanAge(date: date)
             }
+            notice
+                .padding(.top, Design.Spacing.xs)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Design.pageMargin)
         .padding(.top, Design.Spacing.l)
         .padding(.bottom, Design.Spacing.m)
+    }
+
+    /// Why the sizes may be off, and what fixes it. One note at a time.
+    @ViewBuilder
+    private var notice: some View {
+        // While the folder on screen has parts macOS keeps closed without Full Disk Access, its size is too low.
+        if !folder.isComplete, !permissions.hasFullDiskAccess {
+            NoticeBanner(
+                tone: .warning, symbol: "lock.fill",
+                message: Text(
+                    "Sebagian isi folder ini nggak bisa dibaca Havus, jadi ukurannya belum lengkap. Nyalain Akses Disk Penuh, terus pindai ulang."
+                )
+            ) {
+                Button("Buka Pengaturan") { permissions.openFullDiskAccessSettings() }
+            }
+        } else if !folder.isComplete, !model.mapHadFullDiskAccess {
+            NoticeBanner(
+                tone: .neutral, symbol: "lock.open",
+                message: Text(
+                    "Akses Disk Penuh udah nyala, tapi peta ini dipindai sebelum itu, jadi ukuran folder ini belum lengkap."
+                )
+            ) {
+                Button("Pindai Ulang") { model.scan() }
+            }
+        } else if model.predatesRemoval(folder) {
+            NoticeBanner(
+                tone: .neutral, symbol: "clock.arrow.circlepath",
+                message: Text("Havus udah bersihin file sejak peta ini dipindai, jadi ukurannya mungkin udah beda.")
+            ) {
+                Button("Pindai Ulang") { model.scan() }
+            }
+        }
+    }
+}
+
+/// When the folder on screen was scanned, such as "Dipindai 2 hari yang lalu", kept current while the page is open.
+/// The exact time is in its tooltip.
+private struct ScanAge: View {
+    let date: Date
+
+    var body: some View {
+        TimelineView(.everyMinute) { context in
+            // The relative format says "sekarang" for the first seconds, which reads like a button to scan now.
+            if context.date.timeIntervalSince(date) < 60 {
+                Text("Dipindai barusan")
+            } else {
+                Text("Dipindai \(Format.relativeDate(date))")
+            }
+        }
+        .font(.callout)
+        .foregroundStyle(.secondary)
+        .help(date.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(Format.locale)))
     }
 }
 

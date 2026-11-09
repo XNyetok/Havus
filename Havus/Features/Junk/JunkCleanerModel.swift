@@ -26,6 +26,8 @@ final class JunkCleanerModel {
     private(set) var phase: Phase = .idle
     private(set) var results: [JunkScanResult] = []
     var selection: Set<JunkItem.ID> = []
+    /// Goes up after each cleanup that removed something, so Peta Disk can tell when its map is older.
+    private(set) var removals = 0
 
     @ObservationIgnored private let scanner: JunkScanner
     @ObservationIgnored private var task: Task<Void, Never>?
@@ -164,6 +166,9 @@ final class JunkCleanerModel {
             )
             results = []
             selection = []
+            if summary.trashedBytes + summary.deletedBytes > 0 {
+                removals += 1
+            }
             phase = .finished(summary)
         }
     }
@@ -187,6 +192,9 @@ final class JunkCleanerModel {
                 Log.removal.notice(
                     "Emptied the Trash: \(Log.megabytes(summary.deletedBytes), format: .fixed(precision: 1)) MB deleted, \(summary.failedCount) removals failed"
                 )
+            }
+            if summary.deletedBytes > 0 {
+                removals += 1
             }
             phase = .finished(summary)
         }

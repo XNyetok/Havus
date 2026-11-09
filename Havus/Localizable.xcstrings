@@ -751,6 +751,16 @@
         }
       }
     },
+    "Akses Disk Penuh udah nyala, tapi peta ini dipindai sebelum itu, jadi ukuran folder ini belum lengkap." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full Disk Access is on now, but this map is from before that, so this folder's size is incomplete."
+          }
+        }
+      }
+    },
     "Aktif" : {
       "localizations" : {
         "en" : {
@@ -1603,6 +1613,26 @@
         }
       }
     },
+    "Dipindai %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scanned %@"
+          }
+        }
+      }
+    },
+    "Dipindai barusan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scanned just now"
+          }
+        }
+      }
+    },
     "Diubah %@" : {
       "localizations" : {
         "en" : {
@@ -1749,6 +1779,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This folder is empty."
+          }
+        }
+      }
+    },
+    "Folder ini udah nggak ada. Pindai ulang biar petanya ikut baru." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This folder is gone. Scan again to bring the map up to date."
           }
         }
       }
@@ -2108,6 +2148,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Havus quit unexpectedly"
+          }
+        }
+      }
+    },
+    "Havus udah bersihin file sejak peta ini dipindai, jadi ukurannya mungkin udah beda." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Havus has cleaned up files since this map was made, so sizes may have changed."
           }
         }
       }

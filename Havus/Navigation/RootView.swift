@@ -75,6 +75,10 @@ struct RootView: View {
             diskUsage.setExclusions(list)
             startupItems.setExclusions(list)
         }
+        // A disk map from before a cleanup may still show what it removed, and Peta Disk says so.
+        .onChange(of: systemJunk.removals + developerJunk.removals + largeFiles.removals + uninstaller.removals) {
+            diskUsage.noteRemoval()
+        }
         .task { updates.checkIfDue() }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             permissions.refresh()
