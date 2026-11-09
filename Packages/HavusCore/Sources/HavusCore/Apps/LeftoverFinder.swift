@@ -8,8 +8,13 @@ public struct Leftover: Sendable, Hashable, Identifiable {
     }
 
     public enum Match: Sendable, Hashable {
-        /// Named after the app's bundle identifier. Reliable, selected by default.
+        /// Named after the app's bundle identifier, alone or with an ending macOS gives an app's files, such as
+        /// `.plist`. Reliable, selected by default.
         case bundleIdentifier
+        /// Starts with the app's bundle identifier and a dot, so it may belong to another app whose identifier starts
+        /// the same way, such as Google Chrome for Testing (`com.google.chrome.for.testing`) for Google Chrome. The
+        /// user should check first.
+        case bundleIdentifierPrefix
         /// Named after the app's name. Probably right, but the user should check first.
         case appName
     }
@@ -92,10 +97,10 @@ public struct LeftoverFinder: Sendable {
             for child in children {
                 let name = child.lastPathComponent.lowercased()
                 let match: Leftover.Match
-                if Self.matches(name, bundleID: bundleID, kind: location.kind),
-                    !others.contains(where: { Self.matches(name, bundleID: $0, kind: location.kind) })
+                if let byIdentifier = Self.identifierMatch(name, bundleID: bundleID, kind: location.kind),
+                    !others.contains(where: { Self.identifierMatch(name, bundleID: $0, kind: location.kind) != nil })
                 {
-                    match = .bundleIdentifier
+                    match = byIdentifier
                 } else if location.matchesAppName, names.contains(name) {
                     match = .appName
                 } else {
@@ -112,10 +117,24 @@ public struct LeftoverFinder: Sendable {
         return results
     }
 
-    static func matches(_ name: String, bundleID: String, kind: Leftover.Kind) -> Bool {
-        if name == bundleID || name.hasPrefix(bundleID + ".") { return true }
+    /// Endings macOS adds to a bundle identifier in the names of an app's own files.
+    static let fileEndings: Set<Substring> = ["plist", "savedstate", "binarycookies"]
+
+    /// How `name` is named after `bundleID`, or `nil` when it isn't. Both are lowercased.
+    static func identifierMatch(_ name: String, bundleID: String, kind: Leftover.Kind) -> Leftover.Match? {
+        if name == bundleID { return .bundleIdentifier }
         // Group containers are named "<team ID>.<bundle ID>" or "group.<bundle ID>".
-        return kind == .groupContainers && name.hasSuffix("." + bundleID)
+        if kind == .groupContainers, name.hasSuffix("." + bundleID) { return .bundleIdentifier }
+        guard name.hasPrefix(bundleID + ".") else { return nil }
+        let ending = name.dropFirst(bundleID.count + 1)
+        if fileEndings.contains(ending) || isByHostEnding(ending) { return .bundleIdentifier }
+        // Any other ending, such as "for.testing.plist", may be the rest of another app's bundle identifier.
+        return .bundleIdentifierPrefix
+    }
+
+    /// `<host UUID>.plist`, the ending of a ByHost preferences file.
+    private static func isByHostEnding(_ ending: Substring) -> Bool {
+        ending.hasSuffix(".plist") && UUID(uuidString: String(ending.dropLast(".plist".count))) != nil
     }
 
     static func nameCandidates(for app: InstalledApp) -> Set<String> {

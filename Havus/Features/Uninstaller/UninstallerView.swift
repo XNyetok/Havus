@@ -214,7 +214,7 @@ private struct AppDetail: View {
                     ComponentRow(
                         title: leftover.kind.title, path: Format.path(leftover.url), size: leftover.size,
                         isSizeComplete: leftover.isFullyReadable,
-                        tag: leftover.match == .appName ? "Cocok dari nama, cek dulu" : nil,
+                        tag: leftover.match.tag,
                         isSelected: model.leftoverSelection.contains(leftover.id)
                     ) { model.toggleLeftover(leftover) }
                     .contextMenu {
@@ -333,6 +333,17 @@ extension Leftover.Kind {
         case .cookies: "Cookies"
         case .launchAgents: "Launch agent"
         case .applicationScripts: "Skrip aplikasi"
+        }
+    }
+}
+
+extension Leftover.Match {
+    /// Why a leftover starts unselected, or `nil` when it starts selected.
+    var tag: LocalizedStringKey? {
+        switch self {
+        case .bundleIdentifier: nil
+        case .bundleIdentifierPrefix: "Mungkin punya aplikasi lain, cek dulu"
+        case .appName: "Cocok dari nama, cek dulu"
         }
     }
 }
