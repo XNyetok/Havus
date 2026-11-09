@@ -292,6 +292,14 @@ private struct OutcomeView: View {
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.defaultAction)
             }
+        } else if !outcome.removedApp, outcome.removedLeftovers == 0, outcome.failedCount > 0 {
+            // Only leftovers were chosen, and none of them moved.
+            EmptyState(
+                symbol: "exclamationmark.triangle", tint: .orange,
+                title: Text("Belum berhasil"),
+                message: Text(
+                    "\(outcome.failedCount) file sisa \(outcome.appName) nggak bisa dipindah ke Tong Sampah karena lagi dipakai atau butuh izin."
+                ))
         } else {
             EmptyState(symbol: "checkmark", title: Text("Beres!"), message: message)
         }
