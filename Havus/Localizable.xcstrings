@@ -123,8 +123,30 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ dan %2$lld file sisanya udah dipindah ke Tong Sampah (%3$@)."
+            "state" : "translated",
+            "value" : "%1$@%#@leftovers@ udah dipindah ke Tong Sampah (%3$@)."
+          },
+          "substitutions" : {
+            "leftovers" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : " dan %arg file sisanya"
+                    }
+                  },
+                  "zero" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : ""
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1739,8 +1761,30 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Hapus %1$@ dan %2$lld file sisanya?"
+            "state" : "translated",
+            "value" : "Hapus %1$@%#@leftovers@?"
+          },
+          "substitutions" : {
+            "leftovers" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : " dan %arg file sisanya"
+                    }
+                  },
+                  "zero" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : ""
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
