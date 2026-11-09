@@ -266,11 +266,12 @@ private struct ToolTile: View {
                     .padding(.bottom, Design.Spacing.xxs)
                 Text(item.title)
                     .font(.headline)
+                // Two lines in a wide window. A narrow one gives the tiles less than 170 points, where some take three.
                 Text(item.subtitle)
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
-                    .lineLimit(2, reservesSpace: true)
+                    .lineLimit(2...4)
                 Spacer(minLength: 0)
                 statusLine
             }
@@ -309,7 +310,7 @@ private struct ToolTile: View {
             }
         }
         .font(.callout)
-        .lineLimit(1)
+        .lineLimit(1...2)
         .monospacedDigit()
         .contentTransition(.opacity)
     }

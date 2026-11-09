@@ -34,7 +34,9 @@ struct RootView: View {
                     row(.startupItems)
                 }
             }
-            .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 300)
+            // No wider than it opens: the window's minimum width counts on it (see HavusApp), and macOS remembers the
+            // width between launches. Every name fits from the minimum up.
+            .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 250)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 AboutSidebarFooter(isSelected: selection == .about) { selection = .about }
             }
