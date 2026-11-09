@@ -2824,12 +2824,12 @@
         }
       }
     },
-    "Mungkin punya aplikasi lain, cek dulu" : {
+    "Mungkin punya app lain" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "May belong to another app, review first"
+            "value" : "May be another app's"
           }
         }
       }
