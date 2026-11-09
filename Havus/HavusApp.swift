@@ -27,6 +27,8 @@ struct HavusApp: App {
         .defaultSize(width: 1040, height: 700)
         .windowResizability(.contentMinSize)
         .commands {
+            // View → Hide Sidebar and Show Sidebar (Control-Command-S), named by macOS in both languages.
+            SidebarCommands()
             AboutCommands(navigator: navigator)
             UpdateCommands(updates: updates)
             ProblemReportCommands(reports: problemReports)
