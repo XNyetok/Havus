@@ -269,12 +269,12 @@
         }
       }
     },
-    "%lld file (%@) dipindah ke Tong Sampah, %lld gagal." : {
+    "%lld file (%@) dipindah ke Tong Sampah. %lld file dilewati karena lagi dipakai atau butuh izin." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%#@files@ (%2$@) moved to the Trash, %3$lld failed."
+            "value" : "%#@files@ (%2$@) moved to the Trash. %#@skipped@"
           },
           "substitutions" : {
             "files" : {
@@ -296,13 +296,33 @@
                   }
                 }
               }
+            },
+            "skipped" : {
+              "argNum" : 3,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg file was skipped because it's in use or needs permission."
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg files were skipped because they're in use or need permission."
+                    }
+                  }
+                }
+              }
             }
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$lld file (%2$@) dipindah ke Tong Sampah, %3$lld gagal."
+            "value" : "%1$lld file (%2$@) dipindah ke Tong Sampah. %3$lld file dilewati karena lagi dipakai atau butuh izin."
           }
         }
       }
@@ -379,6 +399,28 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$lld file dipilih · %2$@"
+          }
+        }
+      }
+    },
+    "%lld file nggak bisa dipindah ke Tong Sampah karena lagi dipakai atau butuh izin." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld file couldn't be moved to the Trash because it's in use or needs permission."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld files couldn't be moved to the Trash because they're in use or need permission."
+                }
+              }
+            }
           }
         }
       }
@@ -1544,7 +1586,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You can put the files back from the Trash until you empty it."
+            "value" : "You can still put files back from the Trash until you empty it."
           }
         }
       }
