@@ -129,7 +129,7 @@ struct ActionBar<Leading: View, Trailing: View>: View {
     @ViewBuilder var trailing: Trailing
 
     var body: some View {
-        ActionBarLayout(spacing: Design.Spacing.m) {
+        SideBySideOrStacked(spacing: Design.Spacing.m, minimumFirstWidth: 180, stackedAlignment: .trailing) {
             HStack(spacing: Design.Spacing.s) { leading }
                 .lineLimit(2)
             HStack(spacing: Design.Spacing.s) { trailing }
@@ -141,48 +141,65 @@ struct ActionBar<Leading: View, Trailing: View>: View {
     }
 }
 
-/// The summary and the action side by side, or the summary above the action once the summary would get less than
-/// `minimumSummaryWidth` next to it. The action always gets its full width.
-private struct ActionBarLayout: Layout {
-    var spacing: CGFloat
-    var minimumSummaryWidth: CGFloat = 180
+/// Text and its buttons side by side, or the buttons below the text once the text would get less than
+/// `minimumFirstWidth` next to them, as in a narrow column. The buttons always get their full width, so a label is
+/// never cut short, and the text never gets squeezed into a sliver.
+struct SideBySideOrStacked: Layout {
+    enum StackedAlignment {
+        case leading, trailing
+    }
 
+    var spacing: CGFloat
+    var minimumFirstWidth: CGFloat
+    /// Where the buttons go when they're below the text.
+    var stackedAlignment: StackedAlignment
+
+    // The text gets the height on offer, like in an HStack. Offered no height limit, it would grow hundreds of points
+    // tall while the window measures its minimum size with everything squeezed narrow (see ActionBar).
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         guard subviews.count == 2 else { return .zero }
-        let action = subviews[1].sizeThatFits(.unspecified)
+        let second = subviews[1].sizeThatFits(.unspecified)
+        let gap = second.width > 0 ? spacing : 0
         guard let width = proposal.width else {
-            let summary = subviews[0].sizeThatFits(.unspecified)
-            return CGSize(width: summary.width + spacing + action.width, height: max(summary.height, action.height))
+            let first = subviews[0].sizeThatFits(.unspecified)
+            return CGSize(width: first.width + gap + second.width, height: max(first.height, second.height))
         }
-        if isStacked(width: width, action: action) {
-            let summary = subviews[0].sizeThatFits(ProposedViewSize(width: width, height: nil))
-            return CGSize(width: width, height: summary.height + spacing + action.height)
+        if isStacked(width: width, second: second) {
+            let height = proposal.height.map { max(0, $0 - spacing - second.height) }
+            let first = subviews[0].sizeThatFits(ProposedViewSize(width: width, height: height))
+            return CGSize(width: width, height: first.height + spacing + second.height)
         }
-        let summary = subviews[0].sizeThatFits(ProposedViewSize(width: width - spacing - action.width, height: nil))
-        return CGSize(width: width, height: max(summary.height, action.height))
+        let first = subviews[0].sizeThatFits(
+            ProposedViewSize(width: max(0, width - gap - second.width), height: proposal.height))
+        return CGSize(width: width, height: max(first.height, second.height))
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         guard subviews.count == 2 else { return }
-        let action = subviews[1].sizeThatFits(.unspecified)
-        let actionProposal = ProposedViewSize(width: min(action.width, bounds.width), height: action.height)
-        if isStacked(width: bounds.width, action: action) {
-            let summary = subviews[0].sizeThatFits(ProposedViewSize(width: bounds.width, height: nil))
-            subviews[0].place(
-                at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: summary.height))
-            subviews[1].place(
-                at: CGPoint(x: bounds.maxX, y: bounds.minY + summary.height + spacing), anchor: .topTrailing,
-                proposal: actionProposal)
+        let second = subviews[1].sizeThatFits(.unspecified)
+        let gap = second.width > 0 ? spacing : 0
+        let secondProposal = ProposedViewSize(width: min(second.width, bounds.width), height: second.height)
+        if isStacked(width: bounds.width, second: second) {
+            let height = max(0, bounds.height - spacing - second.height)
+            subviews[0].place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: height))
+            let y = bounds.minY + height + spacing
+            switch stackedAlignment {
+            case .leading:
+                subviews[1].place(at: CGPoint(x: bounds.minX, y: y), anchor: .topLeading, proposal: secondProposal)
+            case .trailing:
+                subviews[1].place(at: CGPoint(x: bounds.maxX, y: y), anchor: .topTrailing, proposal: secondProposal)
+            }
         } else {
             subviews[0].place(
                 at: CGPoint(x: bounds.minX, y: bounds.midY), anchor: .leading,
-                proposal: ProposedViewSize(width: bounds.width - spacing - action.width, height: nil))
-            subviews[1].place(at: CGPoint(x: bounds.maxX, y: bounds.midY), anchor: .trailing, proposal: actionProposal)
+                proposal: ProposedViewSize(width: max(0, bounds.width - gap - second.width), height: bounds.height))
+            subviews[1].place(at: CGPoint(x: bounds.maxX, y: bounds.midY), anchor: .trailing, proposal: secondProposal)
         }
     }
 
-    private func isStacked(width: CGFloat, action: CGSize) -> Bool {
-        width - spacing - action.width < minimumSummaryWidth
+    /// Without buttons, the text keeps the whole width.
+    private func isStacked(width: CGFloat, second: CGSize) -> Bool {
+        second.width > 0 && width - spacing - second.width < minimumFirstWidth
     }
 }
 
@@ -337,20 +354,23 @@ struct NoticeBanner<Actions: View>: View {
                     tint.opacity(0.14), in: RoundedRectangle(cornerRadius: Design.Radius.icon, style: .continuous)
                 )
                 .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: Design.Spacing.xxs) {
-                if let title {
-                    title
-                        .font(.headline)
+            // In a narrow column, such as Hapus Aplikasi's, the buttons go below the text.
+            SideBySideOrStacked(spacing: Design.Spacing.m, minimumFirstWidth: 240, stackedAlignment: .leading) {
+                VStack(alignment: .leading, spacing: Design.Spacing.xxs) {
+                    if let title {
+                        title
+                            .font(.headline)
+                    }
+                    message
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
                 }
-                message
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: Design.Spacing.s) {
+                    actions
+                }
+                .fixedSize()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            HStack(spacing: Design.Spacing.s) {
-                actions
-            }
-            .fixedSize()
         }
         .padding(Design.Spacing.m)
         .background(tint.opacity(0.07), in: RoundedRectangle(cornerRadius: Design.Radius.card, style: .continuous))
