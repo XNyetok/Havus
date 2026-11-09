@@ -28,7 +28,7 @@ struct LargeFilesView: View {
                 .help("Terakhir dibuka")
                 .disabled(model.phase == .removing)
                 if model.phase != .idle {
-                    RescanButton(title: "Cari Ulang") { model.search() }
+                    RescanButton(title: "Cari Ulang", showsTitle: false) { model.search() }
                         .disabled(model.phase == .searching || model.phase == .removing)
                 }
             }

@@ -118,7 +118,8 @@ struct RowDivider: View {
     }
 }
 
-/// Bottom bar with a page's summary on the left and its primary action on the right.
+/// Bottom bar with a page's summary on the left and its primary action on the right. In a narrow column, such as Hapus
+/// Aplikasi's, the summary goes above the action, so the action's label, which can name an app, is never cut short.
 ///
 /// Text in it wraps on its own. Never give it `.fixedSize(horizontal: false, vertical: true)`: the page's minimum
 /// height is measured with the text squeezed narrow, where it grows hundreds of points tall, and the whole window
@@ -128,11 +129,10 @@ struct ActionBar<Leading: View, Trailing: View>: View {
     @ViewBuilder var trailing: Trailing
 
     var body: some View {
-        HStack(spacing: Design.Spacing.m) {
-            leading
+        ActionBarLayout(spacing: Design.Spacing.m) {
+            HStack(spacing: Design.Spacing.s) { leading }
                 .lineLimit(2)
-            Spacer(minLength: Design.Spacing.m)
-            trailing
+            HStack(spacing: Design.Spacing.s) { trailing }
         }
         .padding(.horizontal, Design.pageMargin)
         .padding(.vertical, Design.Spacing.m)
@@ -141,16 +141,66 @@ struct ActionBar<Leading: View, Trailing: View>: View {
     }
 }
 
-/// The toolbar button that runs a page's scan again, with ⌘R.
+/// The summary and the action side by side, or the summary above the action once the summary would get less than
+/// `minimumSummaryWidth` next to it. The action always gets its full width.
+private struct ActionBarLayout: Layout {
+    var spacing: CGFloat
+    var minimumSummaryWidth: CGFloat = 180
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard subviews.count == 2 else { return .zero }
+        let action = subviews[1].sizeThatFits(.unspecified)
+        guard let width = proposal.width else {
+            let summary = subviews[0].sizeThatFits(.unspecified)
+            return CGSize(width: summary.width + spacing + action.width, height: max(summary.height, action.height))
+        }
+        if isStacked(width: width, action: action) {
+            let summary = subviews[0].sizeThatFits(ProposedViewSize(width: width, height: nil))
+            return CGSize(width: width, height: summary.height + spacing + action.height)
+        }
+        let summary = subviews[0].sizeThatFits(ProposedViewSize(width: width - spacing - action.width, height: nil))
+        return CGSize(width: width, height: max(summary.height, action.height))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        guard subviews.count == 2 else { return }
+        let action = subviews[1].sizeThatFits(.unspecified)
+        let actionProposal = ProposedViewSize(width: min(action.width, bounds.width), height: action.height)
+        if isStacked(width: bounds.width, action: action) {
+            let summary = subviews[0].sizeThatFits(ProposedViewSize(width: bounds.width, height: nil))
+            subviews[0].place(
+                at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: summary.height))
+            subviews[1].place(
+                at: CGPoint(x: bounds.maxX, y: bounds.minY + summary.height + spacing), anchor: .topTrailing,
+                proposal: actionProposal)
+        } else {
+            subviews[0].place(
+                at: CGPoint(x: bounds.minX, y: bounds.midY), anchor: .leading,
+                proposal: ProposedViewSize(width: bounds.width - spacing - action.width, height: nil))
+            subviews[1].place(at: CGPoint(x: bounds.maxX, y: bounds.midY), anchor: .trailing, proposal: actionProposal)
+        }
+    }
+
+    private func isStacked(width: CGFloat, action: CGSize) -> Bool {
+        width - spacing - action.width < minimumSummaryWidth
+    }
+}
+
+/// The toolbar button that runs a page's scan again, with ⌘R. A page with other controls in its toolbar shows only the
+/// icon, so the page's subtitle keeps its room; the title is still its tooltip and what VoiceOver reads.
 struct RescanButton: View {
     var title: LocalizedStringKey = "Pindai Ulang"
+    var showsTitle = true
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Label(title, systemImage: "arrow.clockwise")
+            if showsTitle {
+                Label(title, systemImage: "arrow.clockwise").labelStyle(.titleAndIcon)
+            } else {
+                Label(title, systemImage: "arrow.clockwise").labelStyle(.iconOnly)
+            }
         }
-        .labelStyle(.titleAndIcon)
         .keyboardShortcut("r", modifiers: .command)
         .help(Text(title))
     }
