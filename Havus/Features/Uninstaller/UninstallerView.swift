@@ -285,7 +285,7 @@ private struct OutcomeView: View {
                 symbol: "exclamationmark.triangle", tint: .orange,
                 title: Text("Belum berhasil"),
                 message: Text(
-                    "macOS nolak mindahin \(outcome.appName). Coba nyalain Havus di **Privacy & Security → App Management**, atau hapus manual lewat Finder."
+                    "macOS nolak mindahin \(outcome.appName). Coba nyalain Havus di **Privasi & Keamanan → Manajemen App**, atau hapus manual lewat Finder."
                 )
             ) {
                 Button("Buka Pengaturan") { permissions.openAppManagementSettings() }

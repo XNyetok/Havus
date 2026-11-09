@@ -18,7 +18,7 @@ struct StartupItemsView: View {
                 Text("Item lain, kayak aplikasi yang kebuka pas login, diatur di Pengaturan Sistem.")
                     .foregroundStyle(.secondary)
             } trailing: {
-                Button("Buka Login Items") { model.openLoginItemsSettings() }
+                Button("Buka Item Masuk") { model.openLoginItemsSettings() }
             }
         }
         .toolbar {
@@ -276,7 +276,7 @@ private struct StartupItemRow<Actions: View>: View {
     private var toggleHelp: LocalizedStringKey {
         switch status {
         case .offInSystemSettings:
-            "Kamu cuma bisa nyalain lagi di Pengaturan Sistem, lewat General → Login Items & Extensions."
+            "Kamu cuma bisa nyalain lagi di Pengaturan Sistem, lewat Umum → Item Masuk & Ekstensi."
         case .on: "Matiin biar nggak jalan otomatis lagi"
         default: "Nyalain biar jalan otomatis lagi"
         }

@@ -993,7 +993,7 @@
         }
       }
     },
-    "Buka Login Items" : {
+    "Buka Item Masuk" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2162,7 +2162,7 @@
         }
       }
     },
-    "Kamu cuma bisa nyalain lagi di Pengaturan Sistem, lewat General → Login Items & Extensions." : {
+    "Kamu cuma bisa nyalain lagi di Pengaturan Sistem, lewat Umum → Item Masuk & Ekstensi." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2914,7 +2914,7 @@
         }
       }
     },
-    "Nyalain Havus di daftar Full Disk Access" : {
+    "Nyalain Havus di daftar Akses Disk Penuh" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3586,7 +3586,7 @@
         }
       }
     },
-    "Tanpa izin ini, beberapa lokasi (kayak Tong Sampah, lampiran Mail, dan data app lain) bakal dilewati. Buka **Privacy & Security → Full Disk Access**, terus nyalain Havus." : {
+    "Tanpa izin ini, beberapa lokasi (kayak Tong Sampah, lampiran Mail, dan data app lain) bakal dilewati. Buka **Privasi & Keamanan → Akses Disk Penuh**, terus nyalain Havus." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3904,7 +3904,7 @@
         }
       }
     },
-    "macOS nolak mindahin %@. Coba nyalain Havus di **Privacy & Security → App Management**, atau hapus manual lewat Finder." : {
+    "macOS nolak mindahin %@. Coba nyalain Havus di **Privasi & Keamanan → Manajemen App**, atau hapus manual lewat Finder." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
