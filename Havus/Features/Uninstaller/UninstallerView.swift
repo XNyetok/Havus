@@ -342,7 +342,7 @@ extension Leftover.Match {
     var tag: LocalizedStringKey? {
         switch self {
         case .bundleIdentifier: nil
-        case .bundleIdentifierPrefix: "Mungkin punya aplikasi lain, cek dulu"
+        case .bundleIdentifierPrefix: "Mungkin punya app lain"
         case .appName: "Cocok dari nama, cek dulu"
         }
     }
