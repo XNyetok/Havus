@@ -11,8 +11,12 @@ enum Format {
     static func bytes(_ value: Int64) -> String {
         // Below 1 kB the system's Indonesian format says "bita" (seen on macOS 27), so "0 file dipilih · 0 bita".
         // Use the "byte" everyone says instead. The string catalog makes it "bytes" in English.
-        guard value >= 1000 else { return String(localized: "\(value) byte") }
-        return value.formatted(ByteCountFormatStyle(style: .file, spellsOutZero: false, locale: locale))
+        let text =
+            value >= 1000
+            ? value.formatted(ByteCountFormatStyle(style: .file, spellsOutZero: false, locale: locale))
+            : String(localized: "\(value) byte")
+        // A no-break space keeps the number and its unit on one line when a sentence wraps.
+        return text.replacingOccurrences(of: " ", with: "\u{00A0}")
     }
 
     /// `0.42` → `42%`, as the user's region writes it. A share that rounds to zero but isn't says `<1%`.
